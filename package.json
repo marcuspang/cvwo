@@ -1,0 +1,17 @@
+{
+  "name": "cvwo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^7.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "yarn workspace frontend lint"
+  }
+}
