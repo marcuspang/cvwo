@@ -1,12 +1,8 @@
 import type { NextPage } from "next";
-import AuthForm from "../components/Auth/AuthForm";
+import Layout from "../components/Layout/Layout";
 
 const Home: NextPage = () => {
-  return (
-    <div>
-      <AuthForm />
-    </div>
-  );
+  return <Layout />;
 };
 
 export default Home;
