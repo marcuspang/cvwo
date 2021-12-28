@@ -3,7 +3,7 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
-	"cvwo/main"
+	"os"
 	"strconv"
 	"time"
 
@@ -11,7 +11,6 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
-
 
 func Register(c *fiber.Ctx) error {
 	var data map[string]string
@@ -63,7 +62,7 @@ func Login(c *fiber.Ctx) error {
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // +1 day
 	})
 
-	token, err := claims.SignedString([]byte(main.SecretKey))
+	token, err := claims.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
 		c.Status(fiber.StatusInternalServerError)
@@ -91,7 +90,7 @@ func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(main.SecretKey), nil
+		return []byte(os.Getenv("SECRET")), nil
 	})
 
 	if err != nil {
