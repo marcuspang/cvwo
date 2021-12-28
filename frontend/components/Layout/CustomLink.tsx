@@ -23,7 +23,7 @@ export const CustomLink = ({
   <NextLink passHref={true} href={href} {...nextLinkProps}>
     <ChakraLink
       px={2}
-      py={1}
+      py={2}
       rounded={"md"}
       _hover={{
         textDecoration: "none",

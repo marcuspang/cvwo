@@ -3,12 +3,12 @@ import {
   Avatar,
   Box,
   Button,
+  Container,
   Flex,
   HStack,
   IconButton,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
   Stack,
@@ -16,6 +16,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
+import ColourModeButton from "./ColourModeButton";
 import { CustomLink } from "./CustomLink";
 
 interface NavItem {
@@ -47,8 +48,8 @@ const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+    <Box as={"header"} bg={useColorModeValue("gray.100", "gray.900")}>
+      <Container maxW="full">
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
             size={"md"}
@@ -65,13 +66,17 @@ const Navbar = () => {
               display={{ base: "none", md: "flex" }}
             >
               {navItems.map((item) => (
-                <CustomLink key={"desktop-" + item.name} href={item.href}>
+                <CustomLink
+                  key={"desktop-" + item.name}
+                  href={item.href}
+                >
                   {item.name}
                 </CustomLink>
               ))}
             </HStack>
           </HStack>
           <Flex alignItems={"center"}>
+            <ColourModeButton mr={3} />
             <Menu>
               <MenuButton
                 as={Button}
@@ -80,7 +85,7 @@ const Navbar = () => {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar size={"sm"} id={"user-avatar"} />
+                <Avatar size={"sm"} />
               </MenuButton>
               <MenuList>
                 {menuItems.map((item) => (
@@ -104,10 +109,8 @@ const Navbar = () => {
             </Stack>
           </Box>
         ) : null}
-      </Box>
-
-      <Box p={4}>Main Content Here</Box>
-    </>
+      </Container>
+    </Box>
   );
 };
 

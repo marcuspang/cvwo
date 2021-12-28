@@ -1,0 +1,36 @@
+# users API
+
+###
+# baseURL
+@baseURL = http://localhost:3000
+
+###
+# Get current user
+GET {{baseURL}}/user
+
+###
+# Logout
+POST {{baseURL}}/logout
+
+
+###
+# Register
+POST {{baseURL}}/register
+Content-Type: application/json
+
+{
+    "username": "marcus",
+    "email": "example@gmail.com",
+	"password": "qwer1234"
+}
+
+###
+# Login
+POST {{baseURL}}/login
+Content-Type: application/json
+
+{
+    "username": "marcus",
+    "email": "example@gmail.com",
+	"password": "qwer1234"
+}
