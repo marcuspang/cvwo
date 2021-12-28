@@ -24,7 +24,7 @@ export default function Footer() {
         justify={{ base: "center", md: "space-between" }}
         align={{ base: "center", md: "center" }}
       >
-        <Text>© 2020 Chakra Templates. All rights reserved</Text>
+        <Text>© 2021 Marcus Pang</Text>
         <Stack direction={"row"} spacing={2}>
           <SocialButton label={"Twitter"} href={"#"}>
             <FaTwitter />

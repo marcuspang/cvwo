@@ -1,14 +1,12 @@
 import { Button, useColorModeValue, VisuallyHidden } from "@chakra-ui/react";
 
-export const SocialButton = ({
-  children,
-  label,
-  href,
-}: {
+interface SocialButtonProps {
   children: React.ReactNode;
   label: string;
   href: string;
-}) => {
+}
+
+export const SocialButton = ({ children, label, href }: SocialButtonProps) => {
   return (
     <Button
       bg={useColorModeValue("gray.100", "gray.900")}
