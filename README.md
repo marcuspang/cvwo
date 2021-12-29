@@ -47,6 +47,9 @@ Done by Marcus Pang Yu Yang
 - jwt-go
 - PostgreSQL
 
+Database Tables
+![Database Tables](./database_tables.png)
+
 ## Tutorials/UI Frameworks
 
 - https://www.youtube.com/watch?v=X9WULjvgqTY&list=PLlameCF3cMEvoymqJrVrvwx5VLLpjin8r (gofiber tutorial)
