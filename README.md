@@ -1,6 +1,6 @@
 # CVWO Project: Task Management Project
 
-Done by Marcus Pang Yu Yang (A0177474R)
+Done by Marcus Pang Yu Yang
 
 ## Features
 
@@ -29,20 +29,26 @@ Done by Marcus Pang Yu Yang (A0177474R)
    - [ ] Lists can be shared/assigned to other users (edit access)
    - [ ] Dark mode
 
-## Tech stack
+# Tech stack
 
-### Frontend
+## Frontend
 
-- Next.js
 - React.js
+- Next.js
 - Redux
 - Typescript
+- ChakraUI
 
-### Backend
+## Backend
 
 - Golang
-- PostgresQL
+- gofiber
+- GORM
+- jwt-go
+- PostgreSQL
 
-# Tutorials
+## Tutorials/UI Frameworks
 
-- https://github.com/go-bun/bun-starter-kit
+- https://www.youtube.com/watch?v=X9WULjvgqTY&list=PLlameCF3cMEvoymqJrVrvwx5VLLpjin8r (gofiber tutorial)
+- https://chakra-templates.dev/ (ChakraUI templates)
+- https://choc-ui.tech/ (ChakraUI templates)
