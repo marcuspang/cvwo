@@ -1,34 +1,74 @@
+import { PlusSquareIcon } from "@chakra-ui/icons";
 import {
-  Avatar,
-  Button,
-  Flex,
-  Grid,
-  GridItem,
+  Box,
+  HStack,
+  IconButton,
+  Stack,
   useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import ColourModeButton from "../components/Layout/ColourModeButton";
+import { useRouter } from "next/router";
 import Layout from "../components/Layout/Layout";
+import ListCard from "../components/ListCard/ListCard";
 
+export interface TaskInterface {
+  name: string;
+  done: boolean;
+  deleted: boolean;
+  dueDate?: Date;
+}
+
+export interface ListInterface {
+  title: string;
+  tasks?: TaskInterface[];
+  deleted: boolean;
+}
+
+const lists: ListInterface[] = [
+  {
+    title: "first list",
+    tasks: [
+      {
+        name: "do laundry",
+        done: false,
+        deleted: false,
+        dueDate: new Date(),
+      },
+      {
+        name: "finish CVWO mockup",
+        done: false,
+        deleted: false,
+      },
+    ],
+    deleted: false,
+  },
+  {
+    title: "second",
+    deleted: false,
+  },
+];
+
+// TODO refactor colours into theme.ts
 const Home: NextPage = () => {
+  const router = useRouter();
+
+  // Layout contains Sidebar
+  // children passed in Layout refers to main content in pages
   return (
     <Layout>
-      <Grid templateColumns={"repeat(6, 1fr)"} h={"full"}>
-        <GridItem colSpan={1} bg={useColorModeValue("", "gray.700")}>
-          <Flex p={3} w={"full"}>
-            <Flex alignItems={"center"}>
-              <Button mr={3} px={3} w={"full"}>
-                <Avatar size={"xs"} mr={3} />
-                Login here
-              </Button>
-              <ColourModeButton />
-            </Flex>
-          </Flex>
-        </GridItem>
-        <GridItem colSpan={5} bg={useColorModeValue("gray.300", "gray.800")}>
-          right
-        </GridItem>
-      </Grid>
+      <Stack gap={0} direction={"row"} pt={5}>
+        {lists.map((list, key) => {
+          return <ListCard key={key} list={list} />;
+        })}
+        <Box w={"sm"} pl={4}>
+          <IconButton
+            aria-label="Add list"
+            icon={<PlusSquareIcon />}
+            w={"full"}
+          />
+        </Box>
+      </Stack>
     </Layout>
   );
 };

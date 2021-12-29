@@ -7,6 +7,8 @@ const config = {
 };
 
 // extend theme for ChakraUI
-const theme = extendTheme({ config });
+const theme = extendTheme({
+  config,
+});
 
 export default theme;

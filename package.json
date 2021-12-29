@@ -12,7 +12,7 @@
     "husky": "^7.0.0"
   },
   "scripts": {
-    "dev": "concurrently \"go run backend/cmd/cvwo/main.go\" \"yarn workspace frontend dev\"",
+    "dev": "concurrently \"yarn workspace backend start\" \"yarn workspace frontend dev\"",
     "prepare": "husky install",
     "lint": "yarn workspace frontend lint"
   }
