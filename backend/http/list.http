@@ -1,0 +1,38 @@
+# users API
+
+###
+# baseURL
+@baseURL = http://localhost:3000
+
+###
+# Get current user's lists
+GET {{baseURL}}/list
+
+###
+# Add list for current user
+POST {{baseURL}}/list/create
+Content-Type: application/json
+
+{
+    "title": "latest"
+}
+
+###
+# Archive list
+GET {{baseURL}}/list/archive?id=7&delete=false
+
+###
+# Unarchive list
+GET {{baseURL}}/list/unarchive?id=3
+
+###
+# Update list
+PATCH  {{baseURL}}/list/update
+Content-Type: application/json
+
+{
+    "id": 5,
+    "title": "sample",
+    "tasks": [],
+    "users": []
+}

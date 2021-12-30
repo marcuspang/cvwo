@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var DB *gorm.DB
@@ -16,7 +17,10 @@ func Connect() {
 		panic("database url could not be found")
 	}
 
-	connection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// TODO remove on production
+	connection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 
 	if err != nil {
 		panic("could not connect to database")

@@ -3,7 +3,7 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
-	"log"
+	"cvwo/util"
 	"os"
 	"strconv"
 	"time"
@@ -13,20 +13,29 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Register(c *fiber.Ctx) error {
-	var data map[string]string
+type RegisterParam struct {
+	Username string `json:"username" xml:"username" form:"username"`
+	LoginParam
+}
 
+type LoginParam struct {
+	Email    string `json:"email" xml:"email" form:"email"`
+	Password string `json:"password" xml:"password" form:"password"`
+}
+
+func Register(c *fiber.Ctx) error {
+	data := new(RegisterParam)
 	if err := c.BodyParser(&data); err != nil {
 		return err
 	}
 
 	// generate bcrypt hash of the password
-	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
+	password, _ := bcrypt.GenerateFromPassword([]byte(data.Password), 14)
 
 	// create user object to store in database
 	user := models.User{
-		Username: data["username"],
-		Email:    data["email"],
+		Username: data.Username,
+		Email:    data.Email,
 		Password: password,
 	}
 	database.DB.Create(&user)
@@ -42,15 +51,14 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	var data map[string]string
-
+	data := new(LoginParam)
 	if err := c.BodyParser(&data); err != nil {
 		return err
 	}
 
 	// retrieve user object using email
 	var user models.User
-	database.DB.Where("email = ?", data["email"]).First(&user)
+	database.DB.Where("email = ?", data.Email).First(&user)
 
 	// if user does not exist, user will haev Id of 0
 	if user.Id == 0 {
@@ -61,7 +69,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// compares hashed password with password given
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data["password"])); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data.Password)); err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
 			"message": "incorrect password",
@@ -77,7 +85,7 @@ func Login(c *fiber.Ctx) error {
 	// check if SECRET exists
 	secret, ok := os.LookupEnv("SECRET")
 	if !ok {
-		log.Fatalf("secret not declared")
+		panic("secret not declared")
 	}
 
 	// sign token with secret
@@ -106,33 +114,15 @@ func Login(c *fiber.Ctx) error {
 
 // get current user
 func User(c *fiber.Ctx) error {
-	// retrieve cookie
-	cookie := c.Cookies("jwt")
-
-	// check if SECRET exists
-	secret, ok := os.LookupEnv("SECRET")
-	if !ok {
-		log.Fatalf("secret not declared")
-	}
-
-	// get token with secret key
-	token, err := jwt.ParseWithClaims(cookie, &jwt.RegisteredClaims{}, func(t *jwt.Token) (interface{}, error) {
-		return []byte(secret), nil
-	})
+	// TODO add auth middleware for routes
+	userId, err := util.CurrentUserId(c)
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
+		return c.JSON(err)
 	}
 
-	// retrieve Issuer in claims by asserting that the
-	// RegisteredClaims interface implements token.Claims
-	claims := token.Claims.(*jwt.RegisteredClaims)
-
+	// find user in database using id
 	var user models.User
-
-	database.DB.Where("id = ?", claims.Issuer).First(&user)
+	database.DB.Where("id = ?", userId).First(&user)
 
 	return c.JSON(user)
 }

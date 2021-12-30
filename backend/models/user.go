@@ -9,5 +9,5 @@ type User struct {
 	Password  []byte    `json:"-"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
-	Lists     []List    `gorm:"many2many:user_list" json:"lists"`
+	Lists     []List    `gorm:"many2many:user_list" json:"-"`
 }
