@@ -2,6 +2,7 @@ package database
 
 import (
 	"cvwo/models"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -10,7 +11,11 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	dsn := "host=localhost user=postgres password=password dbname=cvwo port=5432 sslmode=disable"
+	dsn, ok := os.LookupEnv("DATABASE_URL")
+	if !ok {
+		panic("database url could not be found")
+	}
+
 	connection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -19,5 +24,6 @@ func Connect() {
 
 	DB = connection
 
-	connection.AutoMigrate(&models.User{})
+	// setup tables in database
+	connection.AutoMigrate(&models.User{}, &models.List{}, &models.Task{}, &models.Label{})
 }

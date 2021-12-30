@@ -2,12 +2,11 @@ package models
 
 import "time"
 
-type User struct {
+type Label struct {
 	Id        uint      `gorm:"primarykey" json:"id"`
-	Username  string    `json:"username"`
-	Email     string    `gorm:"unique" json:"email"`
-	Password  []byte    `json:"-"`
+	Name      string    `json:"name"`
+	Deleted   bool      `gorm:"default:false" json:"deleted"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
-	Lists     []List    `gorm:"many2many:user_list" json:"lists"`
+	Tasks     []Task    `gorm:"many2many:task_label" json:"tasks"`
 }
