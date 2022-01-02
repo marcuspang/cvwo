@@ -61,3 +61,5 @@ Database Tables
 - [x] add query param for reading archived tasks/lists
 - [x] change archive endpoint to /object/id/archive 
 - [ ] abstract process of checking whether user is authorized to modify object (list/task)
+- [ ] standardise error interface and error messages
+- [ ] optimise database queries

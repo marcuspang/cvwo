@@ -8,7 +8,7 @@ type Task struct {
 	StartDate time.Time `json:"startDate"`
 	DueDate   time.Time `json:"dueDate"`
 	Done      bool      `gorm:"default:false" json:"done"`
-	Deleted   bool      `gorm:"default:false" json:"deleted"`
+	Archived   bool      `gorm:"default:false" json:"deleted"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 	ListId    uint       `gorm:"not null" json:"listId"`

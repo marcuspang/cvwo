@@ -12,7 +12,7 @@ type GetTasksQuery struct {
 	ListId int `query:"listId"`
 }
 
-type AddTaskParam struct {
+type AddTaskBody struct {
 	Name      string `json:"name" xml:"name" form:"name"`
 	StartDate string `json:"startDate" xml:"startDate" form:"startDate"` // in ISO format
 	DueDate   string `json:"dueDate" xml:"dueDate" form:"dueDate"`       // in ISO format
@@ -20,7 +20,7 @@ type AddTaskParam struct {
 }
 
 type UpdateTaskParam struct {
-	AddTaskParam
+	AddTaskBody
 	Done   bool  `json:"done" xml:"done" form:"done"`       // TODO figure out passing optional data, Done must always be passed for now
 	Labels []int `json:"labels" xml:"labels" form:"labels"` // list of task ids
 }
@@ -28,118 +28,88 @@ type UpdateTaskParam struct {
 func GetTasksFromListId(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 
-	queries := &GetTasksQuery{}
-	if err := c.QueryParser(queries); err != nil {
+	var queries GetTasksQuery
+	if err := c.QueryParser(&queries); err != nil {
 		return err
 	}
 
-	// get users associated with listId given
-	var users []models.User
-	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Users").Find(&users); err != nil {
+	// get user associated with listId given
+	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Users").Find(&models.User{Id: userId}); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error finding users in list",
+			"message": "error finding user in list",
 		})
 	}
 
 	// only return task if user is in list.Users
-	for _, user := range users {
-		if user.Id == userId {
-			var tasks []models.Task
-			// return error if any
-			if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Tasks").Find(&tasks); err != nil {
-				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"message": err.Error(),
-				})
-			}
-			// success
-			return c.JSON(tasks)
-		}
+	var tasks []models.Task
+	// return error if any
+	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Tasks").Find(&tasks); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
 	}
-	// else not authorized to view tasks
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"message": "unauthorized to view tasks",
-	})
+	return c.JSON(tasks)
 }
 
-// func GetTask(c *fiber.Ctx) error {
-// 	userId := c.Locals("userId").(uint)
-// 	taskId, err := c.ParamsInt("id")
-// 	if err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"message": "bad input params",
-// 		})
-// 	}
+func GetTask(c *fiber.Ctx) error {
+	userId := c.Locals("userId").(uint)
+	taskId, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
 
-// 	// get users associated with listId given
-// 	var users []models.User
-// 	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Users").Find(&users); err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 			"message": "error finding users in list",
-// 		})
-// 	}
+	var task models.Task
+	if err := database.DB.Find(&task, taskId).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "task not found",
+		})
+	}
 
-// 	// only return task if user is in list.Users
-// 	for _, user := range users {
-// 		if user.Id == userId {
-// 			var tasks []models.Task
-// 			// return error if any
-// 			if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Tasks").Find(&tasks); err != nil {
-// 				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 					"message": err.Error(),
-// 				})
-// 			}
-// 			// success
-// 			return c.JSON(tasks)
-// 		}
-// 	}
-// 	// else not authorized to view tasks
-// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-// 		"message": "unauthorized to view tasks",
-// 	})
-// }
+	// find user associated with listId given
+	if err := database.DB.Model(&models.List{Id: task.ListId}).Association("Users").Find(&models.User{Id: userId}); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error finding user in list",
+		})
+	}
+
+	// only return task if user is in list.Users
+	return c.JSON(task)
+}
 
 func AddTask(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 
-	params := &AddTaskParam{}
-	if err := c.BodyParser(&params); err != nil {
+	var body AddTaskBody
+	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
 	// get users associated with listId given
-	var users []models.User
-	if err := database.DB.Model(&models.List{Id: uint(params.ListId)}).Association("Users").Find(&users); err != nil {
+	if err := database.DB.Model(&models.List{Id: uint(body.ListId)}).Association("Users").Find(&models.User{Id: userId}); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error finding users in list",
+			"message": "error finding user in list",
 		})
 	}
 
 	// only add task if user is in list.Users
-	for _, user := range users {
-		if user.Id == userId {
-			// date from frontend must be converted to ISOString before sending to backend
-			task := models.Task{
-				Name:      params.Name,
-				StartDate: util.FormatJSDate(params.StartDate),
-				DueDate:   util.FormatJSDate(params.DueDate),
-				Done:      false,
-				Deleted:   false,
-				ListId:    uint(params.ListId),
-			}
-
-			if err := database.DB.Create(&task).Error; err != nil {
-				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"message": err.Error(),
-				})
-			}
-			// success
-			return c.JSON(task)
-		}
+	// date from frontend must be converted to ISOString before sending to backend
+	task := models.Task{
+		Name:      body.Name,
+		StartDate: util.FormatJSDate(body.StartDate),
+		DueDate:   util.FormatJSDate(body.DueDate),
+		Done:      false,
+		Archived:   false,
+		ListId:    uint(body.ListId),
 	}
-	// not authorized to create
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"message": "unauthorized to create task",
-	})
+
+	if err := database.DB.Create(&task).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(task)
 }
 
 func UpdateTask(c *fiber.Ctx) error {
@@ -151,61 +121,52 @@ func UpdateTask(c *fiber.Ctx) error {
 		})
 	}
 
-	params := &UpdateTaskParam{}
-	if err := c.BodyParser(&params); err != nil {
+	var body UpdateTaskParam
+	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
 	// get users associated with listId given
-	var users []models.User
-	if err := database.DB.Model(&models.List{Id: uint(params.ListId)}).Association("Users").Find(&users); err != nil {
+	if err := database.DB.Model(&models.List{Id: uint(body.ListId)}).Association("Users").Find(&models.User{Id: userId}); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error finding users in list",
+			"message": "error finding user in list",
 		})
 	}
 
 	// only update task if user is in list.Users
-	for _, user := range users {
-		if user.Id == userId {
-			var task models.Task
+	var task models.Task
 
-			database.DB.First(&task, taskId)
+	database.DB.First(&task, taskId)
 
-			task.Done = params.Done // always passed for now
-			task.ListId = uint(params.ListId)
-			if params.DueDate != "" {
-				task.DueDate = util.FormatJSDate(params.DueDate)
-			}
-			if params.Name != "" {
-				task.Name = params.Name
-			}
-			if params.StartDate != "" {
-				task.StartDate = util.FormatJSDate(params.StartDate)
-			}
-			if len(params.Labels) > 0 {
-				var labels []models.Label
-
-				database.DB.Where("id IN ?", params.Labels).Find(&labels)
-				task.Labels = labels
-			}
-			if err := database.DB.Save(&task).Error; err != nil {
-				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"message": err.Error(),
-				})
-			}
-
-			// success
-			return c.JSON(task)
-		}
+	task.Done = body.Done // always passed for now
+	task.ListId = uint(body.ListId)
+	if body.DueDate != "" {
+		task.DueDate = util.FormatJSDate(body.DueDate)
 	}
-	// not authorized to update
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"message": "unauthorized to update task",
-	})
+	if body.Name != "" {
+		task.Name = body.Name
+	}
+	if body.StartDate != "" {
+		task.StartDate = util.FormatJSDate(body.StartDate)
+	}
+	if len(body.Labels) > 0 {
+		var labels []models.Label
+
+		database.DB.Where("id IN ?", body.Labels).Find(&labels)
+		task.Labels = labels
+	}
+	if err := database.DB.Save(&task).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": err.Error(),
+		})
+	}
+
+	// success
+	return c.JSON(task)
 }
 
 func DeleteTask(c *fiber.Ctx) error {
-	// userId := c.Locals("userId").(uint)
+	userId := c.Locals("userId").(uint)
 	taskId, err := c.ParamsInt("id")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -213,30 +174,66 @@ func DeleteTask(c *fiber.Ctx) error {
 		})
 	}
 
-	// get users associated with listId given
-	// var users []models.User
-	// if err := database.DB.Model(&models.List{Id: uint()}).Association("Users").Find(&users); err != nil {
-	// 	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	// 		"message": "error finding users in list",
-	// 	})
-	// }
+	var task models.Task
+	if err := database.DB.Find(&task, taskId).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "no task found",
+		})
+	}
 
-	// // only update task if user is in list.Users
-	// for _, user := range users {
-	// 	if user.Id == userId {
-	// 		// database.DB.Model(&models.List{Id: uint(taskId)}).Association("Tasks").Delete(&models.Task{Id: }) // remove association
-	// 		database.DB.Delete(&models.Task{Id: uint(taskId)}) // delete from database
-	// 		return c.JSON(fiber.Map{
-	// 			"message": "success",
-	// 		})
-	// 	}
-	// }
-	database.DB.Delete(&models.Task{Id: uint(taskId)}) // delete from database
+	// get users associated with listId of task
+	if err := database.DB.Model(&models.List{Id: task.ListId}).Association("Users").Find(&models.User{Id: userId}); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error finding user in list",
+		})
+	}
+
+	// only update task if user is in list.Users
+	if err := database.DB.Delete(&task).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error deleting task",
+		})
+	}
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
-	// not authorized to update
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"message": "unauthorized to update task",
+}
+
+func ArchiveTask(c *fiber.Ctx) error {
+	userId := c.Locals("userId").(uint)
+	taskId, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
+
+	var body ArchiveBody
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+
+	var task models.Task
+	if err := database.DB.Find(&task, taskId).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "no task found",
+		})
+	}
+
+	// get user associated with listId of task
+	if err := database.DB.Model(&models.List{Id: task.ListId}).Association("Users").Find(&models.User{Id: userId}); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error finding user in list",
+		})
+	}
+
+	task.Archived = body.Archive
+	if err := database.DB.Save(&task).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error deleting task",
+		})
+	}
+	return c.JSON(fiber.Map{
+		"message": "success",
 	})
 }

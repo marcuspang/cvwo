@@ -10,7 +10,12 @@
 
 ###
 # Get current user's tasks
-GET {{baseURL}}?listId=2
+GET {{baseURL}}?listId=1
+
+
+###
+# Get task by id
+GET {{baseURL}}/1
 
 ###
 # Add task to list with given listId
@@ -18,7 +23,7 @@ POST {{baseURL}}
 Content-Type: application/json
 
 {
-    "name": "2",
+    "name": "egg",
     "startDate": {{time}},
     "dueDate": {{time}},
     "listId": 2
@@ -26,7 +31,7 @@ Content-Type: application/json
 
 ###
 # Update task 
-PATCH {{baseURL}}/1
+PATCH {{baseURL}}/4
 Content-Type: application/json
 
 {
@@ -36,4 +41,17 @@ Content-Type: application/json
     "done": true,
     "labels": [],
     "listId": 1
+}
+
+### 
+# Delete task
+DELETE {{baseURL}}/3
+
+###
+# Archive/Unarchive task
+PUT {{baseURL}}/1/archive
+Content-Type: application/json
+
+{
+    "archive": true
 }

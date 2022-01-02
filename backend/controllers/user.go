@@ -28,18 +28,18 @@ type UpdateBody struct {
 }
 
 func Register(c *fiber.Ctx) error {
-	params := &RegisterBody{}
-	if err := c.BodyParser(&params); err != nil {
+	var body RegisterBody
+	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
 	// generate bcrypt hash of the password
-	password, _ := bcrypt.GenerateFromPassword([]byte(params.Password), 14)
+	password, _ := bcrypt.GenerateFromPassword([]byte(body.Password), 14)
 
 	// create user object to store in database
 	user := models.User{
-		Username: params.Username,
-		Email:    params.Email,
+		Username: body.Username,
+		Email:    body.Email,
 		Password: password,
 	}
 
@@ -54,14 +54,14 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	params := &LoginBody{}
-	if err := c.BodyParser(&params); err != nil {
+	var body LoginBody
+	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
 	// retrieve user object using email
 	user := models.User{
-		Email: params.Email,
+		Email: body.Email,
 	}
 	if err := database.DB.Find(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -70,7 +70,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// compares hashed password with password given
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(params.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(body.Password)); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "incorrect password",
 		})
@@ -166,8 +166,7 @@ func UpdateUser(c *fiber.Ctx) error {
 			"message": "unauthorized to modify user data",
 		})
 	}
-
-	body := &UpdateBody{}
+	var body UpdateBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
