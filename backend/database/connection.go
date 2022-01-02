@@ -29,5 +29,7 @@ func Connect() {
 	DB = connection
 
 	// setup tables in database
-	connection.AutoMigrate(&models.User{}, &models.List{}, &models.Task{}, &models.Label{})
+	if err := connection.AutoMigrate(&models.User{}, &models.List{}, &models.Task{}, &models.Label{}); err != nil {
+		panic(err)
+	}
 }
