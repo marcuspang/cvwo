@@ -7,6 +7,8 @@ import (
 )
 
 func SetupTaskRoutes(app fiber.Router) {
-	app.Get("/task", controllers.GetTasks)
-	app.Post("/task/create", controllers.AddTask)
+	app.Get("/", controllers.GetTasksFromListId) // current user's tasks
+	app.Post("/", controllers.AddTask)
+	app.Patch("/:id", controllers.UpdateTask)
+	app.Delete("/:id", controllers.DeleteTask)
 }

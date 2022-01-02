@@ -8,8 +8,7 @@ import (
 )
 
 type ArchiveParam struct {
-	Id     int  `json:"id" xml:"id" form:"id"`
-	Delete bool `json:"delete" xml:"delete" form:"delete"`
+	Archive bool `json:"archive" xml:"archive" form:"archive"`
 }
 
 type UnarchiveParam struct {
@@ -59,10 +58,10 @@ func AddList(c *fiber.Ctx) error {
 	}
 
 	list := models.List{
-		Title:   params.Title,
-		Deleted: false,
-		Tasks:   nil,
-		Users:   []models.User{user},
+		Title:    params.Title,
+		Archived: false,
+		Tasks:    nil,
+		Users:    []models.User{user},
 	}
 
 	if err := database.DB.Create(&list).Error; err != nil {
@@ -75,6 +74,12 @@ func AddList(c *fiber.Ctx) error {
 
 func ArchiveList(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
+	listId, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
 
 	// check whether listId exists
 	params := &ArchiveParam{}
@@ -84,13 +89,13 @@ func ArchiveList(c *fiber.Ctx) error {
 
 	var users []models.User
 	list := models.List{
-		Id: uint(params.Id),
+		Id: uint(listId),
 	}
 
 	// find users who have access to list
 	if err := database.DB.Model(&list).Association("Users").Find(&users); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
+			"message": "error finding users in list",
 		})
 	}
 
@@ -99,14 +104,10 @@ func ArchiveList(c *fiber.Ctx) error {
 		// if in the list, archive the list
 		if user.Id == userId {
 			// TODO figure out error handling here
-			if params.Delete {
-				// remove association
-				database.DB.Model(&user).Association("Lists").Delete(&list)
-				// delete from database
-				database.DB.Delete(&list)
+			if params.Archive {
+				database.DB.Model(&list).Update("archived", true)
 			} else {
-				// update "deleted" field to be true
-				database.DB.Model(&list).Update("deleted", true)
+				database.DB.Model(&list).Update("archived", false)
 			}
 			return c.JSON(fiber.Map{
 				"message": "success",
@@ -116,42 +117,37 @@ func ArchiveList(c *fiber.Ctx) error {
 
 	// else return error
 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		"message": "unauthorized to archive/delete list",
+		"message": "unauthorized to archive/unarchive list",
 	})
 }
 
-// TODO research whether ArchiveList and UnarchiveList should be combined into one handler
-func UnarchiveList(c *fiber.Ctx) error {
+func DeleteList(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
-
-	// check whether listId exists
-	params := &UnarchiveParam{}
-	if err := c.BodyParser(params); err != nil {
-		return err
+	listId, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
 	}
 
 	var users []models.User
 	list := models.List{
-		Id: uint(params.Id),
+		Id: uint(listId),
 	}
 
 	// find users who have access to list
 	if err := database.DB.Model(&list).Association("Users").Find(&users); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "users not found",
+			"message": "error finding users in list",
 		})
 	}
 
 	// check if current user is in the list
 	for _, user := range users {
-		// if in the list, unarchive the list
+		// if in the list, archive the list
 		if user.Id == userId {
-			if err := database.DB.Model(&list).Update("deleted", false).Error; err != nil {
-				return c.JSON(fiber.Map{
-					"message": err.Error(),
-				})
-			}
-			// if delete transaction has no error then delete was successful
+			database.DB.Model(&user).Association("Lists").Delete(&list) // remove association
+			database.DB.Delete(&list) // delete from database
 			return c.JSON(fiber.Map{
 				"message": "success",
 			})
@@ -160,14 +156,19 @@ func UnarchiveList(c *fiber.Ctx) error {
 
 	// else return error
 	return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-		"message": "unauthorized to unarchive list",
+		"message": "unauthorized to delete list",
 	})
 }
 
 func UpdateList(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
+	listId, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
 
-	// check whether listId exists
 	params := &UpdateListParam{}
 	if err := c.BodyParser(params); err != nil {
 		return err
@@ -175,13 +176,13 @@ func UpdateList(c *fiber.Ctx) error {
 
 	var users []models.User
 	list := models.List{
-		Id: uint(params.Id),
+		Id: uint(listId),
 	}
 
 	// find users who have access to list
 	if err := database.DB.Model(&list).Association("Users").Find(&users); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "users not found",
+			"message": "error finding users in list",
 		})
 	}
 
@@ -212,8 +213,10 @@ func UpdateList(c *fiber.Ctx) error {
 					"message": err.Error(),
 				})
 			}
-			// else return the list updated
-			return c.JSON(list)
+			// success
+			return c.JSON(fiber.Map{
+				"message": "success",
+			})
 		}
 	}
 	// else return error

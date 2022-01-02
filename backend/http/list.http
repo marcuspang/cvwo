@@ -6,45 +6,37 @@
 
 ###
 # Get current user's lists
-GET {{baseURL}}/list
+GET {{baseURL}}
 
 ###
 # Add list for current user
-POST {{baseURL}}/list/create
+POST {{baseURL}}
 Content-Type: application/json
 
 {
-    "title": "potato"
+    "title": "potato2"
 }
 
 ###
-# Archive list
-POST {{baseURL}}/list/archive
+# Archive/Unarchive list
+PUT {{baseURL}}/1/archive
 Content-Type: application/json
 
 {
-    "id": 5,
-    "delete": true
+    "archive": false
 }
-
-###
-# Unarchive list
-POST {{baseURL}}/list/unarchive
-Content-Type: application/json
-
-{
-    "id": 2
-}
-
 
 ###
 # Update list
-PATCH  {{baseURL}}/list/update
+PATCH  {{baseURL}}/1
 Content-Type: application/json
 
 {
-    "id": 2,
-    "title": "sample",
+    "title": "egg",
     "tasks": [],
-    "users": [1,2]
+    "users": []
 }
+
+###
+# Delete list
+DELETE {{baseURL}}/1

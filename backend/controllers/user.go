@@ -22,6 +22,11 @@ type LoginBody struct {
 	Password string `json:"password" xml:"password" form:"password"`
 }
 
+type UpdateBody struct {
+	Username string `json:"username" xml:"username" form:"username"`
+	Email    string `json:"email" xml:"email" form:"email"`
+}
+
 func Register(c *fiber.Ctx) error {
 	params := &RegisterBody{}
 	if err := c.BodyParser(&params); err != nil {
@@ -149,7 +154,7 @@ func GetUser(c *fiber.Ctx) error {
 
 func UpdateUser(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
-	id, err := strconv.Atoi(c.Params("id"))
+	id, err := c.ParamsInt("id")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "bad input params",
@@ -162,12 +167,12 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	body := &RegisterBody{}
+	body := &UpdateBody{}
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
-	var user models.User
 
+	var user models.User
 	database.DB.First(&user, userId)
 	if body.Username != "" {
 		user.Username = body.Username
@@ -183,6 +188,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 	return c.JSON(user)
 }
+
 func DeleteUser(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 	id, err := strconv.Atoi(c.Params("id"))

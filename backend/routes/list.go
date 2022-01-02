@@ -7,9 +7,9 @@ import (
 )
 
 func SetupListRoutes(app fiber.Router) {
-	app.Get("/", controllers.GetLists)
-	app.Post("/create", controllers.AddList)
-	app.Patch("/update", controllers.UpdateList)
-	app.Post("/archive", controllers.ArchiveList) // pass "delete=true" in query for delete
-	app.Post("/unarchive", controllers.UnarchiveList)
+	app.Get("/", controllers.GetLists) // current user's lists
+	app.Post("/", controllers.AddList)
+	app.Patch("/:id", controllers.UpdateList)
+	app.Delete("/:id", controllers.DeleteList)
+	app.Put("/:id/archive", controllers.ArchiveList) // pass "archive=true" in body for archive
 }

@@ -34,18 +34,18 @@ Content-Type: application/json
 
 {
     "username": "marcus",
-    "email": "marcus@gmail.com",
+    "email": "potato@gmail.com",
 	"password": "qwer1234"
 }
 
 ### 
 # Update
-PATCH {{baseURL}}/1
+PATCH {{baseURL}}/2
 Content-Type: application/json
 
 {
-    "username": "marcus",
-    "email": "marcus@gmail.com"
+    "username": "test",
+    "email": "potato@gmail.com"
 }
 
 ###

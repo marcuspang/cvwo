@@ -10,16 +10,30 @@
 
 ###
 # Get current user's tasks
-GET {{baseURL}}/task?listId=2
+GET {{baseURL}}?listId=2
 
 ###
 # Add task to list with given listId
-POST {{baseURL}}/task/create
+POST {{baseURL}}
 Content-Type: application/json
 
 {
-    "name": "another one",
+    "name": "2",
     "startDate": {{time}},
     "dueDate": {{time}},
     "listId": 2
+}
+
+###
+# Update task 
+PATCH {{baseURL}}/1
+Content-Type: application/json
+
+{
+    "name":"asd",
+    "startDate":"",
+    "dueDate":"",
+    "done": true,
+    "labels": [],
+    "listId": 1
 }
