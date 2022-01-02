@@ -1,4 +1,4 @@
-package util
+package middleware
 
 import (
 	"log"
@@ -9,8 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// if user is logged in, user.Id will be returned, else return an Unauthorized error
-func CurrentUserId(c *fiber.Ctx) (uint, fiber.Map) {
+// check if request has cookies and saves userId into c.Locals
+func Protected(c *fiber.Ctx) error {
 	// retrieve cookie
 	cookie := c.Cookies("jwt")
 
@@ -25,10 +25,9 @@ func CurrentUserId(c *fiber.Ctx) (uint, fiber.Map) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		c.Status(fiber.StatusUnauthorized)
-		return 0, fiber.Map{
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "unauthenticated",
-		}
+		})
 	}
 
 	// retrieve Issuer in claims by asserting that the
@@ -36,9 +35,13 @@ func CurrentUserId(c *fiber.Ctx) (uint, fiber.Map) {
 	issuer := token.Claims.(*jwt.RegisteredClaims).Issuer
 
 	userId, err := strconv.Atoi(issuer)
-	if err != nil {
-		panic("invalid issuer")
+	if err != nil || userId == 0 {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "invalid issuer",
+		})
 	}
 
-	return uint(userId), nil
+	c.Locals("userId", uint(userId))
+
+	return c.Next()
 }

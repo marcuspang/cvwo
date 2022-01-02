@@ -3,7 +3,6 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
-	"cvwo/util"
 	"os"
 	"strconv"
 	"time"
@@ -13,37 +12,36 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type RegisterParam struct {
+type RegisterBody struct {
 	Username string `json:"username" xml:"username" form:"username"`
-	LoginParam
+	LoginBody
 }
 
-type LoginParam struct {
+type LoginBody struct {
 	Email    string `json:"email" xml:"email" form:"email"`
 	Password string `json:"password" xml:"password" form:"password"`
 }
 
 func Register(c *fiber.Ctx) error {
-	data := new(RegisterParam)
-	if err := c.BodyParser(&data); err != nil {
+	params := &RegisterBody{}
+	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
 
 	// generate bcrypt hash of the password
-	password, _ := bcrypt.GenerateFromPassword([]byte(data.Password), 14)
+	password, _ := bcrypt.GenerateFromPassword([]byte(params.Password), 14)
 
 	// create user object to store in database
 	user := models.User{
-		Username: data.Username,
-		Email:    data.Email,
+		Username: params.Username,
+		Email:    params.Email,
 		Password: password,
 	}
-	database.DB.Create(&user)
 
-	// if Email already exists, user will have id of 0
-	if user.Id == 0 {
+	// return any error in creation of user
+	if err := database.DB.Create(&user).Error; err != nil {
 		return c.JSON(fiber.Map{
-			"message": "email already exists",
+			"message": err.Error(),
 		})
 	}
 
@@ -51,27 +49,24 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	data := new(LoginParam)
-	if err := c.BodyParser(&data); err != nil {
+	params := &LoginBody{}
+	if err := c.BodyParser(&params); err != nil {
 		return err
 	}
 
 	// retrieve user object using email
-	var user models.User
-	database.DB.Where("email = ?", data.Email).First(&user)
-
-	// if user does not exist, user will haev Id of 0
-	if user.Id == 0 {
-		c.Status(fiber.StatusNotFound)
-		return c.JSON(fiber.Map{
+	user := models.User{
+		Email: params.Email,
+	}
+	if err := database.DB.Find(&user).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "user not found",
 		})
 	}
 
 	// compares hashed password with password given
-	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(data.Password)); err != nil {
-		c.Status(fiber.StatusBadRequest)
-		return c.JSON(fiber.Map{
+	if err := bcrypt.CompareHashAndPassword(user.Password, []byte(params.Password)); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "incorrect password",
 		})
 	}
@@ -91,8 +86,7 @@ func Login(c *fiber.Ctx) error {
 	// sign token with secret
 	signedToken, err := token.SignedString([]byte(secret))
 	if err != nil {
-		c.Status(fiber.StatusInternalServerError)
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "could not login",
 		})
 	}
@@ -109,35 +103,113 @@ func Login(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"message": "success",
+		"data":    signedToken,
 	})
 }
 
 // get current user
-func User(c *fiber.Ctx) error {
-	// TODO add auth middleware for routes
-	userId, err := util.CurrentUserId(c)
-	if err != nil {
-		return c.JSON(err)
-	}
+func Current(c *fiber.Ctx) error {
+	userId := c.Locals("userId")
 
 	// find user in database using id
 	var user models.User
-	database.DB.Where("id = ?", userId).First(&user)
-
+	if err := database.DB.Find(&user, userId).Error; err != nil || user.Id == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "user not found",
+		})
+	}
 	return c.JSON(user)
 }
 
 func Logout(c *fiber.Ctx) error {
 	// "delete" the cookie by setting the expiry to the past
-	cookie := fiber.Cookie{
+	c.Cookie(&fiber.Cookie{
 		Name:     "jwt",
 		Value:    "",
 		Expires:  time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC),
 		HTTPOnly: true,
+	})
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
+}
+
+func GetUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var user models.User
+	if err := database.DB.Find(&user, id).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "user not found",
+		})
 	}
 
-	c.Cookie(&cookie)
+	return c.JSON(user)
+}
 
+func UpdateUser(c *fiber.Ctx) error {
+	userId := c.Locals("userId").(uint)
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
+
+	if userId != uint(id) {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "unauthorized to modify user data",
+		})
+	}
+
+	body := &RegisterBody{}
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+	var user models.User
+
+	database.DB.First(&user, userId)
+	if body.Username != "" {
+		user.Username = body.Username
+	}
+	if body.Email != "" {
+		user.Email = body.Email
+	}
+
+	if err := database.DB.Save(&user).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error updating user",
+		})
+	}
+	return c.JSON(user)
+}
+func DeleteUser(c *fiber.Ctx) error {
+	userId := c.Locals("userId").(uint)
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "bad input params",
+		})
+	}
+
+	if userId != uint(id) {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "unauthorized to modify user data",
+		})
+	}
+
+	user := &models.User{Id: userId}
+
+	if err := database.DB.Model(&user).Association("Lists").Clear(); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error deleting associations",
+		})
+	}
+	if err := database.DB.Delete(&user).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "error deleting user",
+		})
+	}
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})

@@ -1,0 +1,25 @@
+# users API
+
+###
+# baseURL
+@baseURL = http://localhost:3000/task
+
+### 
+# time
+@time = "2022-01-01T15:39:24.022Z"
+
+###
+# Get current user's tasks
+GET {{baseURL}}/task?listId=2
+
+###
+# Add task to list with given listId
+POST {{baseURL}}/task/create
+Content-Type: application/json
+
+{
+    "name": "another one",
+    "startDate": {{time}},
+    "dueDate": {{time}},
+    "listId": 2
+}

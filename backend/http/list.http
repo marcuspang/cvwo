@@ -2,7 +2,7 @@
 
 ###
 # baseURL
-@baseURL = http://localhost:3000
+@baseURL = http://localhost:3000/list
 
 ###
 # Get current user's lists
@@ -14,16 +14,28 @@ POST {{baseURL}}/list/create
 Content-Type: application/json
 
 {
-    "title": "latest"
+    "title": "potato"
 }
 
 ###
 # Archive list
-GET {{baseURL}}/list/archive?id=7&delete=false
+POST {{baseURL}}/list/archive
+Content-Type: application/json
+
+{
+    "id": 5,
+    "delete": true
+}
 
 ###
 # Unarchive list
-GET {{baseURL}}/list/unarchive?id=3
+POST {{baseURL}}/list/unarchive
+Content-Type: application/json
+
+{
+    "id": 2
+}
+
 
 ###
 # Update list
@@ -31,8 +43,8 @@ PATCH  {{baseURL}}/list/update
 Content-Type: application/json
 
 {
-    "id": 5,
+    "id": 2,
     "title": "sample",
     "tasks": [],
-    "users": []
+    "users": [1,2]
 }

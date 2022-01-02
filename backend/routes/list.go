@@ -6,10 +6,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupListRoutes(app *fiber.App) {
-	app.Get("/list", controllers.GetUserLists)
-	app.Post("/list/create", controllers.AddList)
-	app.Patch("/list/update", controllers.UpdateList)
-	app.Get("/list/archive", controllers.ArchiveList)
-	app.Get("/list/unarchive", controllers.UnarchiveList)
+func SetupListRoutes(app fiber.Router) {
+	app.Get("/", controllers.GetLists)
+	app.Post("/create", controllers.AddList)
+	app.Patch("/update", controllers.UpdateList)
+	app.Post("/archive", controllers.ArchiveList) // pass "delete=true" in query for delete
+	app.Post("/unarchive", controllers.UnarchiveList)
 }
