@@ -1,11 +1,8 @@
-# users API
-
-###
-# baseURL
-@baseURL = http://localhost:3000/task
+# Task API
 
 ### 
-# time
+# Constants
+@baseURL = http://localhost:3000/task
 @time = "2022-01-01T15:39:24.022Z"
 
 ###

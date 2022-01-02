@@ -44,6 +44,6 @@ func main() {
 	routes.Setup(app)
 
 	// listen on port flag passed and prints error if any
-	// TODO remove "localhost" added to prevent firewall request on Windows
+	// TODO "localhost" added to prevent firewall request on Windows
 	log.Fatal(app.Listen("localhost" + *port))
 }
