@@ -4,16 +4,24 @@ import {
   BoxProps,
   Button,
   Flex,
+  Spinner,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import router from "next/router";
 import { FaCalendar, FaList, FaTasks } from "react-icons/fa";
+import { useGetCurrentUserQuery } from "../../app/services/user";
 import ColourModeButton from "../Layout/ColourModeButton";
+import LoginModal from "../LoginModal/LoginModal";
+import LoginButton from "./LoginButton";
 import SidebarItem from "./SidebarItem";
 
 interface SidebarContentProps extends BoxProps {}
 
 const SidebarContent = (props: SidebarContentProps) => {
+  const { data: user, isLoading, isError } = useGetCurrentUserQuery({});
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box
       as="nav"
@@ -31,20 +39,9 @@ const SidebarContent = (props: SidebarContentProps) => {
       w="60"
       {...props}
     >
+      <LoginModal isOpen={isOpen} onClose={onClose} />
       <Flex align={"center"} w="full" pb={4}>
-        <Button
-          mr={3}
-          px={3}
-          w={"full"}
-          bg={useColorModeValue("white", "gray.700")}
-          _hover={{
-            bg: useColorModeValue("gray.100", "gray.800"),
-          }}
-        >
-          <Avatar size={"xs"} mr={3} />
-          Login here
-        </Button>
-        <ColourModeButton />
+        <LoginButton isLoading={isLoading} user={user} isError={isError} onClick={onOpen} />
       </Flex>
       <Flex
         direction="column"

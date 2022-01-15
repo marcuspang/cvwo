@@ -1,17 +1,10 @@
 import { PlusSquareIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  HStack,
-  IconButton,
-  Stack,
-  useColorModeValue,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, IconButton, Stack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import Layout from "../components/Layout/Layout";
 import ListCard from "../components/ListCard/ListCard";
-
+import theme from "../theme/theme";
 export interface TaskInterface {
   name: string;
   done: boolean;
@@ -49,7 +42,6 @@ const lists: ListInterface[] = [
   },
 ];
 
-// TODO refactor colours into theme.ts
 const Home: NextPage = () => {
   const router = useRouter();
 

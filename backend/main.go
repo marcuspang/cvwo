@@ -24,6 +24,8 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		panic("Error loading .env file")
 	}
+	// to load the flags
+	flag.Parse()
 
 	// connect database and setup tables
 	database.Connect()

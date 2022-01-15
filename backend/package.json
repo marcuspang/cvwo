@@ -7,13 +7,16 @@
     "nodemon": "^2.0.15"
   },
   "scripts": {
-    "start": "nodemon --exec go run . --ext go --delay 3"
+    "start": "nodemon --exec go run main.go -port :4000 --ext go --delay 2"
   },
   "nodemonConfig": {
     "ignore": [
       ".git",
       "node_modules/**/node_modules"
     ],
+    "execMap": {
+      "go": "go"
+    },
     "verbose": true
   }
 }
