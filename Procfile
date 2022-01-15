@@ -1,1 +1,1 @@
-web: go run backend/main.go -port $PORT -prod
+web: backend/bin/cvwo -port $PORT -prod

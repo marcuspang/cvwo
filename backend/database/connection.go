@@ -12,7 +12,7 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	dsn, ok := os.LookupEnv("DATABASE_URL")
+	dsn, ok := os.LookupEnv("DB_URL")
 	if !ok {
 		panic("database url could not be found")
 	}
