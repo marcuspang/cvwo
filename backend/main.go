@@ -21,8 +21,10 @@ var (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		panic("Error loading .env file")
+	if !*prod {
+		if err := godotenv.Load(); err != nil {
+			panic("Error loading .env file")
+		}
 	}
 	// to load the flags
 	flag.Parse()
