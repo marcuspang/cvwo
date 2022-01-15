@@ -1,1 +1,1 @@
-web: backend/bin/cvwo -port $PORT -prod
+web: backend/bin/cvwo.exe -port $PORT -prod
