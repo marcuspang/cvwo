@@ -1,1 +1,1 @@
-web: go run backend/main.go
+web: go run backend/main.go -port $PORT -prod
