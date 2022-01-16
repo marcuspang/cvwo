@@ -21,13 +21,14 @@ var (
 )
 
 func main() {
+	// to load the flags
+	flag.Parse()
+
 	if !*prod {
 		if err := godotenv.Load(); err != nil {
 			panic("Error loading .env file")
 		}
 	}
-	// to load the flags
-	flag.Parse()
 
 	// connect database and setup tables
 	database.Connect()
@@ -48,6 +49,5 @@ func main() {
 	routes.Setup(app)
 
 	// listen on port flag passed and prints error if any
-	// TODO "localhost" added to prevent firewall request on Windows
-	log.Fatal(app.Listen("localhost" + *port))
+	log.Fatal(app.Listen(*port))
 }
