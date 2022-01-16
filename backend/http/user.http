@@ -2,7 +2,7 @@
 
 ###
 # Constants
-@baseURL = http://localhost:3000/user
+@baseURL = http://localhost:4000/user
 
 ###
 # Get current user

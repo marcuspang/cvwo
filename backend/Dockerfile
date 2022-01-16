@@ -1,29 +1,38 @@
-# syntax=docker/dockerfile:1
+### Development
+FROM golang:1.17 as development
 
-##
-## Build
-##
-FROM golang:1.17-alpine
-
-# folder containing files
+# Add a work directory
 WORKDIR /app
 
-COPY . ./
-# install go dependencies
+# Copy app files and install dependencies
+COPY . .
 RUN go mod download
-RUN go build -o /bin
+# Install Reflex for development
+RUN go install github.com/cespare/reflex@latest
 
-##
-## Deploy
-##
-FROM alpine
+# Expose port
+EXPOSE 4000
 
-WORKDIR /
+# Start app
+CMD reflex -g '*.go' --start-service -v -- sh -c 'go run main.go -port=:4000'
 
-COPY --from=build /bin /bin
+### Production
+FROM golang:1.17 as builder
 
-EXPOSE 8080
+WORKDIR /app
 
-USER nonroot:nonroot
+COPY . .
+RUN go mod download
 
-ENTRYPOINT ["/bin"]
+# ENV from docker's website on building go app
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+
+FROM alpine:3.14 as production
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder app .
+
+EXPOSE 4000
+
+CMD ["./app", "-prod"]

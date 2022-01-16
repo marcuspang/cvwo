@@ -74,7 +74,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button  mr={3} onClick={signUpHandler}>
+          <Button mr={3} onClick={signUpHandler}>
             Sign Up
           </Button>
           <Button onClick={onClose}>Cancel</Button>

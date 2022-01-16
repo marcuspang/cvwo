@@ -7,7 +7,8 @@
     "nodemon": "^2.0.15"
   },
   "scripts": {
-    "start": "nodemon --exec go run main.go -port :4000 --ext go --delay 2"
+    "dev": "nodemon --exec go run main.go -port :4000 --ext go --delay 2",
+    "start": "bin/cvwo.exe -port :4000"
   },
   "nodemonConfig": {
     "ignore": [
