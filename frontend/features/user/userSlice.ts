@@ -12,7 +12,7 @@ interface UserState {
   token: string;
 }
 
-const initialState: UserState = {
+export const userInitialState: UserState = {
   user: {
     username: "",
     email: "",
@@ -22,11 +22,15 @@ const initialState: UserState = {
 
 export const user = createSlice({
   name: "user",
-  initialState,
+  initialState: userInitialState,
   reducers: {
     // incrementByAmount: (state, action: PayloadAction<number>) => {},
-    setToken: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
+    setCredentials: (
+      state,
+      action: PayloadAction<{ user: User; token: string }>
+    ) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
     },
   },
   extraReducers: (builder) => {
@@ -43,18 +47,10 @@ export const user = createSlice({
         state.user = { username, email };
       }
     );
-    builder.addMatcher(
-      apiWithUser.endpoints.logout.matchFulfilled,
-      (state, action) => {
-        state = initialState;
-        console.log("current state", state);
-        console.log("action", action);
-      }
-    );
   },
 });
 
-export const { setToken } = user.actions;
+export const { setCredentials } = user.actions;
 
 export const selectUser = (state: RootState) => state.user.user;
 export const selectToken = (state: RootState) => state.user.token;

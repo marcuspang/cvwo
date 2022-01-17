@@ -6,7 +6,7 @@ import {
 } from "@chakra-ui/react";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
-import { selectToken } from "../../features/user/userSlice";
+import { selectUser } from "../../features/user/userSlice";
 import AuthModal from "../UserModal/AuthModal";
 import SettingsModal from "../UserModal/SettingsModal";
 import LoginButton from "./LoginButton";
@@ -15,9 +15,9 @@ import SidebarItems from "./SidebarItems";
 interface SidebarContentProps extends BoxProps {}
 
 const SidebarContent = (props: SidebarContentProps) => {
-  const { data, isLoading, isError, refetch } = useGetCurrentUserQuery({});
+  const { data, isLoading, isError } = useGetCurrentUserQuery({});
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const token = useAppSelector(selectToken);
+  const user = useAppSelector(selectUser);
 
   return (
     <Box
@@ -36,16 +36,17 @@ const SidebarContent = (props: SidebarContentProps) => {
       w="60"
       {...props}
     >
-      {token ? (
-        <SettingsModal
-          isOpen={isOpen}
-          onClose={onClose}
-          refetchUser={refetch}
-        />
+      {user && user.username.length ? (
+        <SettingsModal isOpen={isOpen} onClose={onClose} />
       ) : (
-        <AuthModal isOpen={isOpen} onClose={onClose} refetchUser={refetch} />
+        <AuthModal isOpen={isOpen} onClose={onClose} />
       )}
-      <LoginButton isLoading={isLoading} isError={isError} onOpen={onOpen} user={data} />
+      <LoginButton
+        isLoading={isLoading}
+        isError={isError}
+        onOpen={onOpen}
+        user={data}
+      />
       <SidebarItems />
     </Box>
   );

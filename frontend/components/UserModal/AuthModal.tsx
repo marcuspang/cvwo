@@ -17,16 +17,15 @@ import { InputControl, FormControl } from "formik-chakra-ui";
 import { useRef, useState } from "react";
 import { useLoginMutation, useRegisterMutation } from "../../app/services/user";
 import { useAppDispatch } from "../../app/store";
-import { setToken } from "../../features/user/userSlice";
+import { setCredentials } from "../../features/user/userSlice";
 import CustomInputControl from "../Layout/CustomInput";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  refetchUser: () => void;
 }
 
-const AuthModal = ({ isOpen, onClose, refetchUser }: LoginModalProps) => {
+const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
   const initialRef = useRef<HTMLInputElement>(null);
   const [registering, setRegistering] = useState(true);
 
@@ -39,7 +38,6 @@ const AuthModal = ({ isOpen, onClose, refetchUser }: LoginModalProps) => {
       isOpen={isOpen}
       onClose={onClose}
       initialFocusRef={initialRef}
-      scrollBehavior="outside"
       size={"xl"}
     >
       <ModalOverlay />
@@ -58,9 +56,13 @@ const AuthModal = ({ isOpen, onClose, refetchUser }: LoginModalProps) => {
               onClose();
             } else {
               const result = await login({ ...values }).unwrap();
-              dispatch(setToken(result.data));
+              dispatch(
+                setCredentials({
+                  user: { username: values.username, email: values.email },
+                  token: result.data,
+                })
+              );
               onClose();
-              refetchUser();
             }
           }}
         >
@@ -85,7 +87,6 @@ const AuthModal = ({ isOpen, onClose, refetchUser }: LoginModalProps) => {
                   type="password"
                 />
               </ModalBody>
-
               <ModalFooter justifyContent={"space-between"}>
                 <Box>
                   <Link

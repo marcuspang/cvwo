@@ -10,6 +10,7 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrentUser: builder.query({
       query: () => "/user/current",
+      providesTags: ["User"],
     }),
     register: builder.mutation({
       query: (user: UserCredentials) => ({
@@ -17,6 +18,7 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
         method: "POST",
         body: user,
       }),
+      invalidatesTags: ["User"],
     }),
     login: builder.mutation({
       query: (user: UserCredentials) => ({
@@ -24,12 +26,14 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
         method: "POST",
         body: user,
       }),
+      invalidatesTags: ["User"],
     }),
     logout: builder.mutation({
       query: () => ({
         url: "/user/logout",
         method: "POST",
       }),
+      invalidatesTags: ["User"],
     }),
   }),
 });

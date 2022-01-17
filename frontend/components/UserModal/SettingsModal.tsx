@@ -10,29 +10,22 @@ import {
 } from "@chakra-ui/react";
 import { useLogoutMutation } from "../../app/services/user";
 import { useAppDispatch } from "../../app/store";
-import { setToken } from "../../features/user/userSlice";
+import {
+  setCredentials,
+  userInitialState,
+} from "../../features/user/userSlice";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  refetchUser: () => void;
 }
 
-const SettingsModal = ({
-  isOpen,
-  onClose,
-  refetchUser,
-}: SettingsModalProps) => {
+const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      scrollBehavior="outside"
-      size={"xl"}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} size={"xl"}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
@@ -43,8 +36,8 @@ const SettingsModal = ({
           <Button
             onClick={() => {
               logout({});
+              dispatch(setCredentials(userInitialState));
               onClose();
-              // dispatch(setToken(""));
             }}
           >
             Logout
