@@ -1,6 +1,5 @@
 import { Avatar, Button, Flex } from "@chakra-ui/react";
-import { useAppSelector } from "../../app/store";
-import { selectUser, User } from "../../features/user/userSlice";
+import type { User } from "../../app/features/userSlice";
 import ColourModeButton from "../Layout/ColourModeButton";
 import CustomSpinner from "../Layout/CustomSpinner";
 

@@ -13,7 +13,7 @@ import { useAppDispatch } from "../../app/store";
 import {
   setCredentials,
   userInitialState,
-} from "../../features/user/userSlice";
+} from "../../app/features/userSlice";
 
 interface SettingsModalProps {
   isOpen: boolean;

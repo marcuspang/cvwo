@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { apiWithUser } from "../../app/services/user";
-import type { RootState } from "../../app/store";
+import { apiWithUser } from "../services/user";
+import type { RootState } from "../store";
 
 export interface User {
   username: string;
@@ -24,7 +24,6 @@ export const user = createSlice({
   name: "user",
   initialState: userInitialState,
   reducers: {
-    // incrementByAmount: (state, action: PayloadAction<number>) => {},
     setCredentials: (
       state,
       action: PayloadAction<{ user: User; token: string }>
@@ -34,12 +33,8 @@ export const user = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(
-      apiWithUser.endpoints.login.matchFulfilled,
-      (state, action) => {
-        state.token = action.payload.token;
-      }
-    );
+    // since every refresh calls current user, this will ensure
+    // that redux knows whether the user is logged in
     builder.addMatcher(
       apiWithUser.endpoints.getCurrentUser.matchFulfilled,
       (state, action) => {

@@ -1,16 +1,13 @@
 import {
   Box,
-  Checkbox,
   Editable,
   EditableInput,
   EditablePreview,
   Flex,
   List,
-  ListIcon,
-  ListItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ListInterface } from "../../pages";
+import type { ListInterface } from "../../pages";
 import ListTasks from "./ListTasks";
 
 interface ListProps {
@@ -19,10 +16,7 @@ interface ListProps {
 
 const ListCard = ({ list }: ListProps) => {
   return (
-    <Flex
-      w={"sm"}
-      pl={4}
-    >
+    <Flex w={"sm"} pl={4}>
       <Box
         w="full"
         mx="auto"

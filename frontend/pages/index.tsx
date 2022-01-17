@@ -3,6 +3,7 @@ import { Box, IconButton, Stack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useGetListsQuery } from "../app/services/list";
 import Layout from "../components/Layout/Layout";
 import ListCard from "../components/ListCard/ListCard";
 import theme from "../theme/theme";
@@ -44,8 +45,9 @@ const lists: ListInterface[] = [
 ];
 
 const Home: NextPage = () => {
-  const router = useRouter();
+  const { data, isLoading } = useGetListsQuery({});
 
+  console.log("lists", data);
   // Layout contains Sidebar
   // children passed in Layout refers to main content in pages
   return (

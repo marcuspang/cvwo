@@ -1,7 +1,7 @@
 import { Input, InputProps } from "@chakra-ui/react";
 import { useField } from "formik";
 import { BaseProps, FormControl } from "formik-chakra-ui";
-import React, { FC, ForwardedRef, forwardRef } from "react";
+import { FC, ForwardedRef, forwardRef } from "react";
 
 export type InputControlProps = BaseProps & {
   inputProps?: InputProps;

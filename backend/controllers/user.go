@@ -45,7 +45,7 @@ func Register(c *fiber.Ctx) error {
 
 	// return any error in creation of user
 	if err := database.DB.Create(&user).Error; err != nil {
-		return c.JSON(fiber.Map{
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
 	}

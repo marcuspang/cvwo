@@ -2,11 +2,11 @@ import {
   Box,
   BoxProps,
   useColorModeValue,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
+import { selectUser } from "../../app/features/userSlice";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
-import { selectUser } from "../../features/user/userSlice";
 import AuthModal from "../UserModal/AuthModal";
 import SettingsModal from "../UserModal/SettingsModal";
 import LoginButton from "./LoginButton";
@@ -15,6 +15,7 @@ import SidebarItems from "./SidebarItems";
 interface SidebarContentProps extends BoxProps {}
 
 const SidebarContent = (props: SidebarContentProps) => {
+  // TODO think of better way to get current user on load?
   const { data, isLoading, isError } = useGetCurrentUserQuery({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const user = useAppSelector(selectUser);

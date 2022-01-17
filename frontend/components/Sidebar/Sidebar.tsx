@@ -1,12 +1,4 @@
-import { HamburgerIcon } from "@chakra-ui/icons";
-import {
-  Button,
-  Drawer,
-  DrawerContent,
-  DrawerOverlay,
-  IconButton,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Drawer, DrawerContent, DrawerOverlay } from "@chakra-ui/react";
 import SidebarContent from "./SidebarContent";
 
 interface SidebarProps {

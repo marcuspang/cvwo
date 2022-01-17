@@ -1,5 +1,5 @@
 import { Flex, useColorModeValue, Icon, FlexProps } from "@chakra-ui/react";
-import { IconType } from "react-icons";
+import type { IconType } from "react-icons";
 
 interface SidebarItemProps extends FlexProps {
   icon: IconType;

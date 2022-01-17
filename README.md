@@ -5,8 +5,9 @@ Done by Marcus Pang Yu Yang
 ## Features
 
 1. Authentication
-   - [ ] Users can register/login using traditional email and password through Go backend and OAuth
-   - [ ] Validation is done on frontend and backend
+   - [x] Users can register/login using traditional email and password through Go backend
+   - [x] Validation is done on frontend and backend
+   - [ ] Users can edit their email and password
 2. Tasks
    - [ ] Users can create/delete/update tasks
    - [ ] Tasks are stored in a list
@@ -27,7 +28,7 @@ Done by Marcus Pang Yu Yang
    - [ ] Notifications can be given based on the due date
    - [ ] Tasks can be shared/assigned to other users (edit access)
    - [ ] Lists can be shared/assigned to other users (edit access)
-   - [ ] Dark mode
+   - [x] Dark mode
 
 # Tech stack
 

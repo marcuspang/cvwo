@@ -1,11 +1,10 @@
 import { emptySplitApi } from ".";
-import { User } from "../../features/user/userSlice";
+import type { User } from "../features/userSlice";
 
 interface UserCredentials extends User {
   password: string;
 }
 
-// Define our single API slice object
 export const apiWithUser = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrentUser: builder.query({
@@ -38,7 +37,7 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
   }),
 });
 
-// Export the auto-generated hook for the `getPosts` query endpoint
+// auto-generated hooks
 export const {
   useGetCurrentUserQuery,
   useRegisterMutation,

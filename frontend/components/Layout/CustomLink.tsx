@@ -1,11 +1,11 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import NextLink from "next/link";
 import {
   Link as ChakraLink,
   LinkProps as ChakraLinkProps,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { LinkProps as NextLinkProps } from "next/dist/client/link";
+import type { LinkProps as NextLinkProps } from "next/dist/client/link";
 
 interface CustomLinkProps {
   children?: ReactNode;
