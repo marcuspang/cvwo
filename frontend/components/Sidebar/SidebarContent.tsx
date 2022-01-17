@@ -37,7 +37,7 @@ const SidebarContent = (props: SidebarContentProps) => {
       w="60"
       {...props}
     >
-      {user && user.username.length ? (
+      {user && user.username ? (
         <SettingsModal isOpen={isOpen} onClose={onClose} />
       ) : (
         <AuthModal isOpen={isOpen} onClose={onClose} />

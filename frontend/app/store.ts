@@ -2,10 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { apiWithUser } from "./services/user";
 import userReducer from "./features/userSlice";
+import listReducer from "./features/listSlice";
 
 const store = configureStore({
   reducer: {
     user: userReducer,
+    list: listReducer,
     [apiWithUser.reducerPath]: apiWithUser.reducer,
   },
   middleware: (getDefaultMiddleware) =>

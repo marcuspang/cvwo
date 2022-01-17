@@ -66,7 +66,7 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
           onSubmit={async (values, actions) => {
             if (registering) {
               try {
-                const result = await register({
+                await register({
                   username: values.username,
                   email: values.email,
                   password: values.password,
@@ -91,7 +91,7 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
               }).unwrap();
               dispatch(
                 setCredentials({
-                  user: { username: values.username, email: values.email },
+                  user: result,
                   token: result.data,
                 })
               );
@@ -131,7 +131,10 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
                 <Box>
                   <Link
                     color={linkColour}
-                    onClick={() => setRegistering((prev) => !prev)}
+                    onClick={() => {
+                      props.setErrors({});
+                      setRegistering((prev) => !prev);
+                    }}
                   >
                     {registering ? "Login instead" : "Register instead"}
                   </Link>

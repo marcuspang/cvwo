@@ -1,39 +1,34 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
 import type { RootState } from "../store";
-import type { User } from "./userSlice";
 
-export interface List {
+export interface ListInterface {
   id: string;
   title: string;
   archived: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  users: User[];
-  tasks: any[];
+  users: number[];
+  tasks: any[]; // TODO update task type
 }
 
 interface ListState {
-  lists: List[];
+  lists: ListInterface[];
 }
 
-const listInitialState = {
-  lists: {},
+const listInitialState: ListState = {
+  lists: [],
 };
 
 export const list = createSlice({
   name: "list",
   initialState: listInitialState,
   reducers: {
-    //     setCredentials: (
-    //       state,
-    //       action: PayloadAction<{ user: User; token: string }>
-    //     ) => {
-    //       state.user = action.payload.user;
-    //       state.token = action.payload.token;
-    //     },
+    setLists: (state, action: PayloadAction<ListInterface[]>) => {
+      state.lists = action.payload;
+    },
   },
   extraReducers: (builder) => {
+    // since every refresh calls current user, this will ensure
+    // that redux knows whether the user is logged in
     builder.addMatcher(
       apiWithList.endpoints.getLists.matchFulfilled,
       (state, action) => {
@@ -43,9 +38,8 @@ export const list = createSlice({
   },
 });
 
-export const {} = list.actions;
+export const { setLists } = list.actions;
 
-export const selectUser = (state: RootState) => state.user.user;
-export const selectToken = (state: RootState) => state.user.token;
+export const selectLists = (state: RootState) => state.list.lists;
 
 export default list.reducer;

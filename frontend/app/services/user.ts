@@ -1,7 +1,8 @@
 import { emptySplitApi } from ".";
-import type { User } from "../features/userSlice";
 
-interface UserCredentials extends User {
+interface UserCredentials {
+  email: string;
+  username: string;
   password: string;
 }
 

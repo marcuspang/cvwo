@@ -3,20 +3,21 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
-  Flex,
+  IconButton,
   List,
   useColorModeValue,
 } from "@chakra-ui/react";
-import type { ListInterface } from "../../pages";
+import { FaTrash, FaTrashAlt } from "react-icons/fa";
+import type { ListInterface } from "../../app/features/listSlice";
 import ListTasks from "./ListTasks";
 
 interface ListProps {
-  list: ListInterface;
+  listData: ListInterface;
 }
 
-const ListCard = ({ list }: ListProps) => {
+const ListCard = ({ listData }: ListProps) => {
   return (
-    <Flex w={"sm"} pl={4}>
+    <Box w={"sm"} pl={4} display={"inline-flex"}>
       <Box
         w="full"
         mx="auto"
@@ -30,20 +31,22 @@ const ListCard = ({ list }: ListProps) => {
           fontSize="lg"
           fontWeight="bold"
           color={useColorModeValue("gray.800", "white")}
-          defaultValue={list.title}
+          defaultValue={listData.title}
         >
-          <EditablePreview />
-          <EditableInput rounded={"sm"} />
+          <EditablePreview width={"calc(100% - 40px)"} mr={1} />
+          <EditableInput rounded={"sm"} width={"calc(100% - 40px)"} mr={1} />
+          <IconButton aria-label="Delete list" icon={<FaTrashAlt />} mb={1} />
         </Editable>
 
         <List mt={2}>
-          {list.tasks?.map((task, key) => (
+          {/* TODO add type for task */}
+          {listData.tasks?.map((task: any, key: number) => (
             <ListTasks task={task} key={key} />
           ))}
           <ListTasks />
         </List>
       </Box>
-    </Flex>
+    </Box>
   );
 };
 

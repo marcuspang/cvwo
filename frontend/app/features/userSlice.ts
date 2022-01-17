@@ -3,20 +3,18 @@ import { apiWithUser } from "../services/user";
 import type { RootState } from "../store";
 
 export interface User {
+  id: number;
   username: string;
   email: string;
 }
 
 interface UserState {
-  user: User;
+  user: User | null;
   token: string;
 }
 
 export const userInitialState: UserState = {
-  user: {
-    username: "",
-    email: "",
-  },
+  user: null,
   token: "",
 };
 
@@ -37,9 +35,8 @@ export const user = createSlice({
     // that redux knows whether the user is logged in
     builder.addMatcher(
       apiWithUser.endpoints.getCurrentUser.matchFulfilled,
-      (state, action) => {
-        const { username, email } = action.payload;
-        state.user = { username, email };
+      (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
       }
     );
   },

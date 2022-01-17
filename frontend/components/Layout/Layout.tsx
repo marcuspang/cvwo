@@ -4,7 +4,7 @@ import {
   Flex,
   IconButton,
   useColorModeValue,
-  useDisclosure,
+  useDisclosure
 } from "@chakra-ui/react";
 import Sidebar from "../Sidebar/Sidebar";
 
@@ -18,13 +18,9 @@ const Layout = ({ children }: LayoutProps) => {
   // within a drawer below md sizepoint
   // Adjacent box is the main page content
   return (
-    <Box
-      as="section"
-      minH={"100vh"}
-      background={useColorModeValue("gray.50", "gray.800")}
-    >
+    <Box minH={"100%"} overflowX={"auto"} h={"100vh"}>
       <Sidebar isOpen={sidebar.isOpen} onClose={sidebar.onClose} />
-      <Box as="main" ml={{ base: 0, md: 60 }}>
+      <Box as="main" ml={{ base: 0, md: 60 }} height={"full"}>
         <Flex
           as="header"
           align="center"
