@@ -10,6 +10,8 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Box,
+  Link,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { useLoginMutation, useRegisterMutation } from "../../app/services/user";
@@ -19,15 +21,17 @@ interface LoginModalProps {
   onClose: () => void;
 }
 
-const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
+const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
   const initialRef = useRef<HTMLInputElement>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [registering, setRegistering] = useState(true);
 
   const [register] = useRegisterMutation();
+  const [login] = useLoginMutation();
 
-  const signUpHandler = () => {
+  const registerHandler = () => {
     register({
       email,
       username,
@@ -36,11 +40,28 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     onClose();
   };
 
+  const loginHandler = () => {
+    login({
+      email,
+      username,
+      password,
+    });
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      initialFocusRef={initialRef}
+      scrollBehavior="outside"
+      size={"xl"}
+    >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Create your account</ModalHeader>
+        <ModalHeader>
+          {registering ? "Create your account" : "Login"}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <FormControl>
@@ -73,15 +94,28 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
           </FormControl>
         </ModalBody>
 
-        <ModalFooter>
-          <Button mr={3} onClick={signUpHandler}>
-            Sign Up
-          </Button>
-          <Button onClick={onClose}>Cancel</Button>
+        <ModalFooter justifyContent={"space-between"}>
+          <Box>
+            <Link
+              color={"gray.800"}
+              onClick={() => setRegistering((prev) => !prev)}
+            >
+              {registering ? "Login instead" : "Register instead"}
+            </Link>
+          </Box>
+          <Box>
+            <Button
+              mr={3}
+              onClick={registering ? registerHandler : loginHandler}
+            >
+              {registering ? "Sign Up" : "Log In"}
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </Box>
         </ModalFooter>
       </ModalContent>
     </Modal>
   );
 };
 
-export default LoginModal;
+export default AuthModal;

@@ -1,5 +1,5 @@
 import { Avatar, Button } from "@chakra-ui/react";
-import { UserState } from "../../features/user/user";
+import { UserState } from "../../features/user/userSlice";
 import ColourModeButton from "../Layout/ColourModeButton";
 import CustomSpinner from "../Layout/CustomSpinner";
 

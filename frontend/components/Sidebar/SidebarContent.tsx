@@ -1,26 +1,25 @@
 import {
-  Avatar,
   Box,
-  BoxProps,
-  Button,
-  Flex,
-  Spinner,
-  useColorModeValue,
-  useDisclosure,
+  BoxProps, Flex, useColorModeValue,
+  useDisclosure
 } from "@chakra-ui/react";
 import router from "next/router";
 import { FaCalendar, FaList, FaTasks } from "react-icons/fa";
 import { useGetCurrentUserQuery } from "../../app/services/user";
-import ColourModeButton from "../Layout/ColourModeButton";
-import LoginModal from "../LoginModal/LoginModal";
+import { useAppSelector } from "../../app/store";
+import { selectUser } from "../../features/user/userSlice";
+import AuthModal from "../AuthModal/AuthModal";
 import LoginButton from "./LoginButton";
 import SidebarItem from "./SidebarItem";
 
 interface SidebarContentProps extends BoxProps {}
 
 const SidebarContent = (props: SidebarContentProps) => {
-  const { data: user, isLoading, isError } = useGetCurrentUserQuery({});
+  const { data, isLoading, isError } = useGetCurrentUserQuery({});
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const user = useAppSelector(selectUser);
+  console.log("user: ", user);
+  console.log("data: ", data);
 
   return (
     <Box
@@ -39,9 +38,14 @@ const SidebarContent = (props: SidebarContentProps) => {
       w="60"
       {...props}
     >
-      <LoginModal isOpen={isOpen} onClose={onClose} />
+      <AuthModal isOpen={isOpen} onClose={onClose} />
       <Flex align={"center"} w="full" pb={4}>
-        <LoginButton isLoading={isLoading} user={user} isError={isError} onClick={onOpen} />
+        <LoginButton
+          isLoading={isLoading}
+          user={user}
+          isError={isError}
+          onClick={onOpen}
+        />
       </Flex>
       <Flex
         direction="column"

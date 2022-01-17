@@ -78,7 +78,8 @@ func Login(c *fiber.Ctx) error {
 
 	// create token with Issuer as user.Id and expiry in one day
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
+		Issuer: strconv.Itoa(int(user.Id)),
+		// "exp": time.Now().Add(time.Hour * 24).Unix(), // +1 day
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), // +1 day
 	})
 
@@ -102,10 +103,10 @@ func Login(c *fiber.Ctx) error {
 		Value:    signedToken,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
+		Domain:   "localhost",
 	}
 
 	c.Cookie(&cookie)
-
 	return c.JSON(fiber.Map{
 		"message": "success",
 		"data":    signedToken,
@@ -143,7 +144,7 @@ func Logout(c *fiber.Ctx) error {
 func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var user models.User
-	if err := database.DB.Find(&user, id).Error; err != nil {
+	if err := database.DB.Find(&user, id).Error; err != nil || user.Id == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "user not found",
 		})

@@ -1,19 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { UserState } from "../../features/user/user";
+import { emptySplitApi } from ".";
+import { UserState } from "../../features/user/userSlice";
 
 interface UserCredentials extends UserState {
   password: string;
 }
 
 // Define our single API slice object
-export const userApi = createApi({
-  baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
-    prepareHeaders: (headers) => {
-      headers.set("credentials", `include`);
-      return headers;
-    },
-  }),
+export const apiWithUser = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
     getCurrentUser: builder.query({
       query: () => "/user/current",
@@ -30,10 +23,25 @@ export const userApi = createApi({
         url: "/user/login",
         method: "POST",
         body: user,
+        responseHandler: (res) => {
+          console.log(res);
+          return res.json();
+        },
+      }),
+    }),
+    logout: builder.mutation({
+      query: () => ({
+        url: "/user/logout",
+        method: "POST",
       }),
     }),
   }),
 });
 
 // Export the auto-generated hook for the `getPosts` query endpoint
-export const { useGetCurrentUserQuery, useRegisterMutation, useLoginMutation } = userApi;
+export const {
+  useGetCurrentUserQuery,
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutMutation,
+} = apiWithUser;

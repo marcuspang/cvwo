@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// connect database and setup tables
-	database.Connect()
+	database.Connect(*prod)
 
 	// setup server application
 	app := fiber.New(fiber.Config{
@@ -49,5 +49,9 @@ func main() {
 	routes.Setup(app)
 
 	// listen on port flag passed and prints error if any
-	log.Fatal(app.Listen(*port))
+	if !*prod {
+		log.Fatal(app.Listen("localhost" + *port))
+	} else {
+		log.Fatal(app.Listen(*port))
+	}
 }

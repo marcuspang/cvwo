@@ -2,6 +2,7 @@ import { PlusSquareIcon } from "@chakra-ui/icons";
 import { Box, IconButton, Stack } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import ListCard from "../components/ListCard/ListCard";
 import theme from "../theme/theme";

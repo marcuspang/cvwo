@@ -10,7 +10,7 @@ GET {{baseURL}}/current
 
 ###
 # Get current user
-GET {{baseURL}}/2
+GET {{baseURL}}/3
 
 ###
 # Logout
@@ -22,9 +22,9 @@ POST {{baseURL}}/
 Content-Type: application/json
 
 {
-    "username": "marcus",
-    "email": "potato@gmail.com",
-	"password": "qwer1234"
+    "username": "a",
+    "email": "a",
+	"password": "a"
 }
 
 ###
@@ -33,9 +33,9 @@ POST {{baseURL}}/login
 Content-Type: application/json
 
 {
-    "username": "marcus",
-    "email": "potato@gmail.com",
-	"password": "qwer1234"
+    "username": "a",
+    "email": "a",
+	"password": "a"
 }
 
 ### 

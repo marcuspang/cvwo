@@ -11,16 +11,20 @@ import (
 
 var DB *gorm.DB
 
-func Connect() {
+func Connect(prod bool) {
 	dsn, ok := os.LookupEnv("DB_URL")
 	if !ok {
 		panic("database url could not be found")
 	}
 
-	// TODO remove on production
-	connection, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-	})
+	var config gorm.Config
+	if !prod {
+		config = gorm.Config{
+			Logger: logger.Default.LogMode(logger.Info),
+		}
+	}
+
+	connection, err := gorm.Open(postgres.Open(dsn), &config)
 
 	if err != nil {
 		panic("could not connect to database")
