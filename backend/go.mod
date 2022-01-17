@@ -17,7 +17,6 @@ require github.com/pkg/errors v0.9.1 // indirect
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/gofiber/jwt/v2 v2.2.7
-	github.com/gofiber/jwt/v3 v3.2.3
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.10.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

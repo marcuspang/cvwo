@@ -1,25 +1,23 @@
 import {
   Box,
-  BoxProps, Flex, useColorModeValue,
-  useDisclosure
+  BoxProps,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import router from "next/router";
-import { FaCalendar, FaList, FaTasks } from "react-icons/fa";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
-import { selectUser } from "../../features/user/userSlice";
-import AuthModal from "../AuthModal/AuthModal";
+import { selectToken } from "../../features/user/userSlice";
+import AuthModal from "../UserModal/AuthModal";
+import SettingsModal from "../UserModal/SettingsModal";
 import LoginButton from "./LoginButton";
-import SidebarItem from "./SidebarItem";
+import SidebarItems from "./SidebarItems";
 
 interface SidebarContentProps extends BoxProps {}
 
 const SidebarContent = (props: SidebarContentProps) => {
-  const { data, isLoading, isError } = useGetCurrentUserQuery({});
+  const { data, isLoading, isError, refetch } = useGetCurrentUserQuery({});
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const user = useAppSelector(selectUser);
-  console.log("user: ", user);
-  console.log("data: ", data);
+  const token = useAppSelector(selectToken);
 
   return (
     <Box
@@ -38,32 +36,17 @@ const SidebarContent = (props: SidebarContentProps) => {
       w="60"
       {...props}
     >
-      <AuthModal isOpen={isOpen} onClose={onClose} />
-      <Flex align={"center"} w="full" pb={4}>
-        <LoginButton
-          isLoading={isLoading}
-          user={user}
-          isError={isError}
-          onClick={onOpen}
+      {token ? (
+        <SettingsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          refetchUser={refetch}
         />
-      </Flex>
-      <Flex
-        direction="column"
-        as="nav"
-        fontSize="sm"
-        color="gray.600"
-        aria-label="Main Navigation"
-      >
-        <SidebarItem icon={FaTasks} onClick={() => router.push("/")}>
-          Tasks
-        </SidebarItem>
-        <SidebarItem icon={FaList} onClick={() => router.push("/lists")}>
-          Lists
-        </SidebarItem>
-        <SidebarItem icon={FaCalendar} onClick={() => router.push("/calendar")}>
-          Calendar
-        </SidebarItem>
-      </Flex>
+      ) : (
+        <AuthModal isOpen={isOpen} onClose={onClose} refetchUser={refetch} />
+      )}
+      <LoginButton isLoading={isLoading} isError={isError} onOpen={onOpen} user={data} />
+      <SidebarItems />
     </Box>
   );
 };

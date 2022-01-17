@@ -1,7 +1,7 @@
 import { emptySplitApi } from ".";
-import { UserState } from "../../features/user/userSlice";
+import { User } from "../../features/user/userSlice";
 
-interface UserCredentials extends UserState {
+interface UserCredentials extends User {
   password: string;
 }
 
@@ -23,10 +23,6 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
         url: "/user/login",
         method: "POST",
         body: user,
-        responseHandler: (res) => {
-          console.log(res);
-          return res.json();
-        },
       }),
     }),
     logout: builder.mutation({
