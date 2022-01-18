@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import type { TaskInterface } from "../../pages";
+import type { TaskInterface } from "../../app/features/taskSlice";
 
 interface ListTasksProps {
   task?: TaskInterface;

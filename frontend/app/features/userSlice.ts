@@ -2,14 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithUser } from "../services/user";
 import type { RootState } from "../store";
 
-export interface User {
+export interface UserInterface {
   id: number;
   username: string;
   email: string;
 }
 
 interface UserState {
-  user: User | null;
+  user: UserInterface | null;
   token: string;
 }
 
@@ -24,7 +24,7 @@ export const user = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; token: string }>
+      action: PayloadAction<{ user: UserInterface; token: string }>
     ) => {
       state.user = action.payload.user;
       state.token = action.payload.token;
@@ -35,7 +35,7 @@ export const user = createSlice({
     // that redux knows whether the user is logged in
     builder.addMatcher(
       apiWithUser.endpoints.getCurrentUser.matchFulfilled,
-      (state, action: PayloadAction<User>) => {
+      (state, action: PayloadAction<UserInterface>) => {
         state.user = action.payload;
       }
     );

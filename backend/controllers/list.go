@@ -29,7 +29,7 @@ func GetLists(c *fiber.Ctx) error {
 	var lists []models.List
 
 	// preload to get users and lists in one query
-	if err := database.DB.Preload("Users").Preload("Tasks").Model(&models.User{Id: userId}).Association("Lists").Find(&lists); err != nil {
+	if err := database.DB.Order("id").Preload("Users").Preload("Tasks").Model(&models.User{Id: userId}).Association("Lists").Find(&lists); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "lists not found",
 		})
@@ -130,11 +130,12 @@ func DeleteList(c *fiber.Ctx) error {
 		})
 	}
 	// delete from database
-	if err := database.DB.Delete(&list); err != nil {
+	if err := database.DB.Delete(&list).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "error deleting list",
 		})
 	}
+
 	return c.JSON(fiber.Map{
 		"message": "success",
 	})
@@ -150,7 +151,7 @@ func UpdateList(c *fiber.Ctx) error {
 	}
 
 	var body UpdateListBody
-	if err := c.BodyParser(body); err != nil {
+	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 

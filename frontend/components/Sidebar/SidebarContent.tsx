@@ -7,7 +7,7 @@ import {
 import { selectUser } from "../../app/features/userSlice";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
-import AuthModal from "../UserModal/AuthModal";
+import AuthModal from "../UserModal/AuthModalTest";
 import SettingsModal from "../UserModal/SettingsModal";
 import LoginButton from "./LoginButton";
 import SidebarItems from "./SidebarItems";

@@ -70,7 +70,7 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
                   username: values.username,
                   email: values.email,
                   password: values.password,
-                }).unwrap();
+                });
               } catch (e) {
                 const errorMessage = (e as { data: { message: string } }).data
                   .message;

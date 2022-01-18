@@ -1,5 +1,5 @@
 import { Avatar, Button, Flex } from "@chakra-ui/react";
-import type { User } from "../../app/features/userSlice";
+import type { UserInterface } from "../../app/features/userSlice";
 import ColourModeButton from "../Layout/ColourModeButton";
 import CustomSpinner from "../Layout/CustomSpinner";
 
@@ -7,7 +7,7 @@ interface LoginButtonProps {
   isLoading: boolean;
   isError: boolean;
   onOpen: () => void;
-  user: User;
+  user: UserInterface;
 }
 
 const LoginButton = ({

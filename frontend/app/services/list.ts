@@ -1,6 +1,5 @@
 import { emptySplitApi } from ".";
 
-// TODO add invalidate tags?
 export const apiWithList = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
     getLists: builder.query({
@@ -13,6 +12,7 @@ export const apiWithList = emptySplitApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["List"],
     }),
     archiveList: builder.mutation({
       query: ({ id, archive }: { id: number; archive: boolean }) => ({
@@ -20,6 +20,7 @@ export const apiWithList = emptySplitApi.injectEndpoints({
         method: "PUT",
         body: { archive },
       }),
+      invalidatesTags: ["List"],
     }),
     updateList: builder.mutation({
       query: ({
@@ -35,15 +36,16 @@ export const apiWithList = emptySplitApi.injectEndpoints({
       }) => ({
         url: "/list/" + id,
         method: "PATCH",
-        body: { title, tasks, users },
+        body: { id, title, tasks, users },
       }),
+      invalidatesTags: ["List"],
     }),
     deleteList: builder.mutation({
-      query: (body: { id: number }) => ({
-        url: "/list/" + body.id,
+      query: (id: number) => ({
+        url: "/list/" + id,
         method: "DELETE",
-        body,
       }),
+      invalidatesTags: ["List"],
     }),
   }),
 });

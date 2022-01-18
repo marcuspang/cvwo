@@ -1,13 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
 import type { RootState } from "../store";
+import type { TaskInterface } from "./taskSlice";
+import type { UserInterface } from "./userSlice";
 
 export interface ListInterface {
-  id: string;
+  id: number;
   title: string;
   archived: boolean;
-  users: number[];
-  tasks: any[]; // TODO update task type
+  users: UserInterface[];
+  tasks: TaskInterface[]; // TODO update task type
 }
 
 interface ListState {
@@ -25,10 +27,16 @@ export const list = createSlice({
     setLists: (state, action: PayloadAction<ListInterface[]>) => {
       state.lists = action.payload;
     },
+    setList: (state, action: PayloadAction<ListInterface>) => {
+      state.lists.forEach((list) => {
+        if (list.id === action.payload.id) {
+          list = action.payload;
+        }
+      });
+    },
   },
   extraReducers: (builder) => {
-    // since every refresh calls current user, this will ensure
-    // that redux knows whether the user is logged in
+    // update redux state with every call of getLists
     builder.addMatcher(
       apiWithList.endpoints.getLists.matchFulfilled,
       (state, action) => {
@@ -38,7 +46,7 @@ export const list = createSlice({
   },
 });
 
-export const { setLists } = list.actions;
+export const { setLists, setList } = list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
 

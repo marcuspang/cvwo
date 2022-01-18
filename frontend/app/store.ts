@@ -3,11 +3,13 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { apiWithUser } from "./services/user";
 import userReducer from "./features/userSlice";
 import listReducer from "./features/listSlice";
+import taskReducer from "./features/taskSlice";
 
 const store = configureStore({
   reducer: {
     user: userReducer,
     list: listReducer,
+    task: taskReducer,
     [apiWithUser.reducerPath]: apiWithUser.reducer,
   },
   middleware: (getDefaultMiddleware) =>
