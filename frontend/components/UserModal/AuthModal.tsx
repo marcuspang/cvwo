@@ -1,6 +1,10 @@
 import {
   Box,
   Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
   Link,
   Modal,
   ModalBody,
@@ -11,31 +15,29 @@ import {
   ModalOverlay,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { Form, Formik } from "formik";
 import { useRef, useState } from "react";
-import * as Yup from "yup";
+import {
+  FieldErrors,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import { setCredentials } from "../../app/features/userSlice";
 import { useLoginMutation, useRegisterMutation } from "../../app/services/user";
 import { useAppDispatch } from "../../app/store";
-import CustomInputControl from "../Layout/CustomInput";
+import isValidEmail from "../../util/isValidEmail";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const registerSchema = Yup.object().shape({
-  username: Yup.string()
-    .min(2, "Username too short, please try again.")
-    .max(50, "Username too long, please try again.")
-    .required("Required"),
-  email: Yup.string().email("Invalid email").required("Required"),
-  password: Yup.string().required("Password is required"),
-  passwordConfirmation: Yup.string().oneOf(
-    [Yup.ref("password"), null],
-    "Passwords must match"
-  ),
-});
+interface FormInputInterface {
+  username: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}
 
 const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
   const initialRef = useRef<HTMLInputElement>(null);
@@ -44,6 +46,53 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
+
+  const form = useForm<FormInputInterface>();
+  const onSubmit: SubmitHandler<FormInputInterface> = async (values) => {
+    if (registering) {
+      try {
+        await register({
+          username: values.username,
+          email: values.email.toLowerCase(),
+          password: values.password,
+        }).unwrap();
+        setRegistering((prev) => !prev);
+      } catch (e) {
+        const errorMessage = (e as FieldErrors).data.message;
+        if (errorMessage && errorMessage.includes("duplicate key")) {
+          form.setError("email", {
+            message: "Email has already been registered, please try again.",
+          });
+        }
+      }
+    } else {
+      try {
+        const result = await login({
+          email: values.email,
+          password: values.password,
+        }).unwrap();
+        dispatch(
+          setCredentials({
+            user: result,
+            token: result.data,
+          })
+        );
+        onClose();
+      } catch (e) {}
+    }
+  };
+
+  const onError: SubmitErrorHandler<FormInputInterface> = async (errors) => {
+    for (let error in errors) {
+      const errorValue = errors[error as keyof typeof errors];
+      if (errorValue) {
+        form.setError(error as keyof typeof errors, errorValue);
+      }
+    }
+  };
+  // for password confirmation
+  const password = useRef({});
+  password.current = form.watch("password", "");
 
   const linkColour = useColorModeValue("gray.800", "gray.200");
 
@@ -60,95 +109,107 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
           {registering ? "Create your account" : "Login"}
         </ModalHeader>
         <ModalCloseButton />
-        <Formik
-          initialValues={{ username: "", email: "", password: "" }}
-          validationSchema={registering && registerSchema}
-          onSubmit={async (values, actions) => {
-            if (registering) {
-              try {
-                await register({
-                  username: values.username,
-                  email: values.email,
-                  password: values.password,
-                });
-              } catch (e) {
-                const errorMessage = (e as { data: { message: string } }).data
-                  .message;
-                if (errorMessage.includes("duplicate key")) {
-                  actions.setFieldError(
-                    "email",
-                    "Email has already been registered, please try again."
-                  );
-                } else {
-                  onClose();
-                }
-              }
-            } else {
-              const result = await login({
-                username: values.username,
-                email: values.email,
-                password: values.password,
-              }).unwrap();
-              dispatch(
-                setCredentials({
-                  user: result,
-                  token: result.data,
-                })
-              );
-              onClose();
-            }
-          }}
-        >
-          {(props) => (
-            <Form>
-              <ModalBody>
-                <CustomInputControl
-                  name="username"
-                  label="Username"
-                  type="text"
-                  mb={2}
+        <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+          <ModalBody>
+            <FormControl isInvalid={!!form.formState.errors.username} mb={2}>
+              <FormLabel htmlFor="username">Username</FormLabel>
+              <Input
+                {...form.register("username", {
+                  required: "Username required",
+                  minLength: { value: 6, message: "Minimum length of 6" },
+                  maxLength: { value: 50, message: "Maximum length of 50" },
+                })}
+              />
+              {form.formState.errors.username && (
+                <FormErrorMessage>
+                  {form.formState.errors.username.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={!!form.formState.errors.email} mb={2}>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
+                {...form.register("email", {
+                  required: "Email required",
+                  validate: (email) =>
+                    isValidEmail(email) || "Enter a valid email",
+                })}
+                type={"email"}
+              />
+              {form.formState.errors.email && (
+                <FormErrorMessage>
+                  {form.formState.errors.email.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            <FormControl isInvalid={!!form.formState.errors.password} mb={2}>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                {...form.register("password", {
+                  required: "Password required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum length of 6",
+                  },
+                })}
+                type={"password"}
+              />
+              {form.formState.errors.password && (
+                <FormErrorMessage>
+                  {form.formState.errors.password.message}
+                </FormErrorMessage>
+              )}
+            </FormControl>
+            {registering && (
+              <FormControl
+                isInvalid={!!form.formState.errors.passwordConfirmation}
+                mb={2}
+              >
+                <FormLabel htmlFor="passwordConfirmation">
+                  Password Confirmation
+                </FormLabel>
+
+                <Input
+                  {...form.register("passwordConfirmation", {
+                    required: "Please confirm your password",
+                    validate: (value) =>
+                      value === password.current ||
+                      "The passwords do not match",
+                  })}
+                  type={"password"}
                 />
-                <CustomInputControl
-                  name="email"
-                  label="Email"
-                  type="email"
-                  mb={2}
-                />
-                <CustomInputControl
-                  name="password"
-                  label="Password"
-                  type="password"
-                />
-                {registering && (
-                  <CustomInputControl
-                    name="passwordConfirmation"
-                    label="Password Confirmation"
-                    type="password"
-                  />
+                {form.formState.errors.passwordConfirmation && (
+                  <FormErrorMessage>
+                    {form.formState.errors.passwordConfirmation.message}
+                  </FormErrorMessage>
                 )}
-              </ModalBody>
-              <ModalFooter justifyContent={"space-between"}>
-                <Box>
-                  <Link
-                    color={linkColour}
-                    onClick={() => {
-                      props.setErrors({});
-                      setRegistering((prev) => !prev);
-                    }}
-                  >
-                    {registering ? "Login instead" : "Register instead"}
-                  </Link>
-                </Box>
-                <Box>
-                  <Button mr={3} isLoading={props.isSubmitting} type="submit">
-                    {registering ? "Sign Up" : "Log In"}
-                  </Button>
-                  <Button onClick={onClose}>Cancel</Button>
-                </Box>
-              </ModalFooter>
-            </Form>
-          )}
-        </Formik>
+              </FormControl>
+            )}
+          </ModalBody>
+          <ModalFooter justifyContent={"space-between"}>
+            <Box>
+              <Link
+                color={linkColour}
+                onClick={() => {
+                  // form.setErrors({});
+                  setRegistering((prev) => !prev);
+                }}
+              >
+                {registering ? "Login instead" : "Register instead"}
+              </Link>
+            </Box>
+            <Box>
+              <Button
+                mr={3}
+                isLoading={form.formState.isSubmitting}
+                type="submit"
+              >
+                {registering ? "Sign Up" : "Log In"}
+              </Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </Box>
+          </ModalFooter>
+        </form>
       </ModalContent>
     </Modal>
   );

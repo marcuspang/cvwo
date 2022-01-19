@@ -3,6 +3,7 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -43,6 +44,8 @@ func Register(c *fiber.Ctx) error {
 		Password: password,
 	}
 
+	fmt.Println("register:", password)
+
 	// return any error in creation of user
 	if err := database.DB.Create(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -60,10 +63,8 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// retrieve user object using email
-	user := models.User{
-		Email: body.Email,
-	}
-	if err := database.DB.Find(&user).Error; err != nil {
+	var user models.User
+	if err := database.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "user not found",
 		})
@@ -78,8 +79,7 @@ func Login(c *fiber.Ctx) error {
 
 	// create token with Issuer as user.Id and expiry in one day
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Issuer: strconv.Itoa(int(user.Id)),
-		// "exp": time.Now().Add(time.Hour * 24).Unix(), // +1 day
+		Issuer:    strconv.Itoa(int(user.Id)),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)), // +1 day
 	})
 

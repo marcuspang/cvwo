@@ -9,19 +9,27 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { Controller, FieldError, FieldErrors, SubmitHandler, useForm } from "react-hook-form";
+import {
+  Controller,
+  FieldErrors,
+  SubmitHandler,
+  useForm,
+} from "react-hook-form";
 import type { ListInterface } from "../../app/features/listSlice";
 import type { TaskInterface } from "../../app/features/taskSlice";
 import { useUpdateListMutation } from "../../app/services/list";
 import ListIcon from "./ListIcon";
+import ListTaskEmpty from "./ListTaskEmpty";
 import ListTasks from "./ListTasks";
 
 interface ListProps {
   listData: ListInterface;
 }
 
-interface FormInputInterface {
+export interface FormInputInterface {
   title: string;
+  "task-new": string;
+  [taskId: string]: string;
 }
 
 const ListCard = ({ listData }: ListProps) => {
@@ -30,17 +38,24 @@ const ListCard = ({ listData }: ListProps) => {
   const form = useForm<FormInputInterface>();
 
   const onSubmit: SubmitHandler<FormInputInterface> = async (values) => {
-    try {
-      await updateList({
-        id: listData.id,
-        tasks: listData.tasks.map((task) => task.id),
-        users: listData.users.map((user) => user.id),
-        title: values.title,
-      });
-    } catch (e) {
-      const errorMessage = (e as FieldErrors).data.message;
-      form.setError("title", { message: errorMessage });
-    }
+    console.log("submitted");
+    console.log(values);
+    // try {
+    //   await updateList({
+    //     id: listData.id,
+    //     tasks: listData.tasks.map((task) => task.id),
+    //     users: listData.users.map((user) => user.id),
+    //     title: values.title,
+    //   });
+    // } catch (e) {
+    //   const errorMessage = (e as FieldErrors).data.message;
+    //   form.setError("title", { message: errorMessage });
+    // }
+  };
+
+  const triggerFormSubmit = () => {
+    console.log("trigger");
+    return form.trigger();
   };
 
   const editableColour = useColorModeValue("gray.800", "white");
@@ -70,7 +85,7 @@ const ListCard = ({ listData }: ListProps) => {
                   value={controlProps.field.value}
                   onSubmit={async () => {
                     // perform validation
-                    const success = await form.trigger();
+                    const success = await triggerFormSubmit();
                     // reset form if fails, else set previous title to current value
                     if (!success) {
                       form.reset();
@@ -100,14 +115,37 @@ const ListCard = ({ listData }: ListProps) => {
               </FormControl>
             )}
           />
+          <List mt={2}>
+            {listData.tasks?.map((task: TaskInterface, key: number) => (
+              <Controller
+                key={key}
+                name={"task-" + task.id}
+                control={form.control}
+                defaultValue={task.name}
+                render={(controlProps) => (
+                  <ListTasks
+                    task={task}
+                    field={controlProps.field}
+                    control={form.control}
+                    triggerFormSubmit={triggerFormSubmit}
+                  />
+                )}
+              />
+            ))}
+            <Controller
+              name={"task-new"}
+              defaultValue={""}
+              control={form.control}
+              render={(controlProps) => (
+                <ListTaskEmpty
+                  field={controlProps.field}
+                  control={form.control}
+                  triggerFormSubmit={triggerFormSubmit}
+                />
+              )}
+            />
+          </List>
         </form>
-
-        <List mt={2}>
-          {listData.tasks?.map((task: TaskInterface, key: number) => (
-            <ListTasks task={task} key={key} />
-          ))}
-          <ListTasks />
-        </List>
       </Box>
     </Box>
   );

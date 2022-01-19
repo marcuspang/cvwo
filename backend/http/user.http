@@ -23,8 +23,8 @@ Content-Type: application/json
 
 {
     "username": "a",
-    "email": "a",
-	"password": "a"
+    "email": "test@test.com1",
+	"password": "asdasdasd"
 }
 
 ###
@@ -33,9 +33,8 @@ POST {{baseURL}}/login
 Content-Type: application/json
 
 {
-    "username": "a",
-    "email": "a",
-	"password": "a"
+    "email": "test@test.com1",
+	"password": "asdasdasd"
 }
 
 ### 
@@ -51,3 +50,6 @@ Content-Type: application/json
 ###
 # Delete
 DELETE {{baseURL}}/1
+
+login: [36 50 97 36 49 52 36 46 102 101 75 85 102 67 99 82 121 102 110 89 101 49 67 102 121 65 73 72 46 120 49 97 79 53 116 88 122 73 79 49 115 89 82 86 49 103 82 74 72 113 116 83 108 99 114 55 105 66 114 97]
+login: [36 50 97 36 49 52 36 46 102 101 75 85 102 67 99 82 121 102 110 89 101 49 67 102 121 65 73 72 46 120 49 97 79 53 116 88 122 73 79 49 115 89 82 86 49 103 82 74 72 113 116 83 108 99 114 55 105 66 114 97]

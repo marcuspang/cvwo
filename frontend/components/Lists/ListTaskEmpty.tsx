@@ -1,6 +1,5 @@
 import {
   Checkbox,
-  CloseButton,
   Editable,
   EditableInput,
   EditablePreview,
@@ -9,30 +8,25 @@ import {
   ListItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import {
   Control,
   ControllerRenderProps,
-  FieldValues,
   useController,
   useFormContext,
 } from "react-hook-form";
-import type { TaskInterface } from "../../app/features/taskSlice";
 import type { FormInputInterface } from "./ListCard";
 
-interface ListTasksProps {
-  task: TaskInterface;
-  field: ControllerRenderProps<FormInputInterface, string>;
+interface ListTaskEmptyProps {
+  field: ControllerRenderProps<FormInputInterface, "task-new">;
   control: Control<FormInputInterface, object>;
   triggerFormSubmit: () => Promise<boolean>;
 }
 
-const ListTasks = ({
-  task,
+const ListTaskEmpty = ({
   field,
   control,
   triggerFormSubmit,
-}: ListTasksProps) => {
+}: ListTaskEmptyProps) => {
   const formControl = useController({
     name: field.name,
     control,
@@ -56,16 +50,16 @@ const ListTasks = ({
           bg: useColorModeValue("gray.100", "gray.900"),
         }}
       />
-      <FormControl
-        isInvalid={!!formControl.formState.errors["task-" + task.id]}
-      >
+      <FormControl isInvalid={!!formControl.formState.errors["task-new"]}>
         <Editable
-          color={useColorModeValue("gray.600", "gray.300")} // _placeholder props don't work
-          defaultValue={task.name}
+          color={useColorModeValue("gray.400", "gray.500")}
+          defaultValue={""}
           display={"inline-block"}
           placeholder={"enter your task"}
           w={"full"}
           onSubmit={async () => {
+            console.log("submit");
+            console.log(formControl)
             triggerFormSubmit();
           }}
         >
@@ -73,9 +67,8 @@ const ListTasks = ({
           <EditableInput {...field} rounded={"sm"} />
         </Editable>
       </FormControl>
-      <CloseButton />
     </ListItem>
   );
 };
 
-export default ListTasks;
+export default ListTaskEmpty;

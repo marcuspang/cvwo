@@ -18,10 +18,9 @@ export const apiWithUser = emptySplitApi.injectEndpoints({
         method: "POST",
         body: user,
       }),
-      invalidatesTags: ["User"],
     }),
     login: builder.mutation({
-      query: (user: UserCredentials) => ({
+      query: (user: Omit<UserCredentials, "username">) => ({
         url: "/user/login",
         method: "POST",
         body: user,
