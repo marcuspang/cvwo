@@ -27,6 +27,9 @@ export const task = createSlice({
     setTasks: (state, action: PayloadAction<TaskInterface[]>) => {
       state.tasks = action.payload;
     },
+    newTask: (state, action: PayloadAction<TaskInterface>) => {
+      state.tasks.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -38,7 +41,7 @@ export const task = createSlice({
   },
 });
 
-// export const {} = task.actions;
+export const { newTask, setTasks } = task.actions;
 
 export const selectTasks = (state: RootState) => state.task.tasks;
 

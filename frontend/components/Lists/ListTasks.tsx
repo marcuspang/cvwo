@@ -1,3 +1,4 @@
+import { SettingsIcon } from "@chakra-ui/icons";
 import {
   Checkbox,
   CloseButton,
@@ -5,6 +6,7 @@ import {
   EditableInput,
   EditablePreview,
   FormControl,
+  IconButton,
   ListIcon,
   ListItem,
   useColorModeValue,
@@ -24,7 +26,7 @@ interface ListTasksProps {
   task: TaskInterface;
   field: ControllerRenderProps<FormInputInterface, string>;
   control: Control<FormInputInterface, object>;
-  triggerFormSubmit: () => Promise<boolean>;
+  triggerFormSubmit: () => void;
 }
 
 const ListTasks = ({
@@ -46,6 +48,7 @@ const ListTasks = ({
     <ListItem
       display={"flex"}
       alignItems={"center"}
+      pb={1}
       onKeyPress={(e) => e.key === "Enter" && submitHandler()}
     >
       <ListIcon
@@ -73,7 +76,7 @@ const ListTasks = ({
           <EditableInput {...field} rounded={"sm"} />
         </Editable>
       </FormControl>
-      <CloseButton />
+      <IconButton aria-label="Settings" size={"sm"} icon={<SettingsIcon />} />
     </ListItem>
   );
 };

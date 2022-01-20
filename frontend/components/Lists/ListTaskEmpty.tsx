@@ -4,6 +4,7 @@ import {
   EditableInput,
   EditablePreview,
   FormControl,
+  FormErrorMessage,
   ListIcon,
   ListItem,
   useColorModeValue,
@@ -19,7 +20,7 @@ import type { FormInputInterface } from "./ListCard";
 interface ListTaskEmptyProps {
   field: ControllerRenderProps<FormInputInterface, "task-new">;
   control: Control<FormInputInterface, object>;
-  triggerFormSubmit: () => Promise<boolean>;
+  triggerFormSubmit: () => void;
 }
 
 const ListTaskEmpty = ({
@@ -39,11 +40,12 @@ const ListTaskEmpty = ({
   return (
     <ListItem
       display={"flex"}
-      alignItems={"center"}
+      // alignItems={"center"}
       onKeyPress={(e) => e.key === "Enter" && submitHandler()}
     >
       <ListIcon
         as={Checkbox}
+        pt={2}
         lineHeight={"normal"}
         transition={"0.1s ease"}
         _hover={{
@@ -57,15 +59,16 @@ const ListTaskEmpty = ({
           display={"inline-block"}
           placeholder={"enter your task"}
           w={"full"}
-          onSubmit={async () => {
-            console.log("submit");
-            console.log(formControl)
-            triggerFormSubmit();
-          }}
+          onSubmit={triggerFormSubmit}
         >
           <EditablePreview />
           <EditableInput {...field} rounded={"sm"} />
         </Editable>
+        {formControl.formState.errors["task-new"] && (
+          <FormErrorMessage fontSize={"xs"}>
+            {formControl.formState.errors["task-new"].message}
+          </FormErrorMessage>
+        )}
       </FormControl>
     </ListItem>
   );

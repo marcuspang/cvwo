@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
+import { apiWithTask } from "../services/task";
 import type { RootState } from "../store";
 import type { TaskInterface } from "./taskSlice";
+import taskSlice from "./taskSlice";
 import type { UserInterface } from "./userSlice";
 
 export interface ListInterface {
@@ -27,10 +29,10 @@ export const list = createSlice({
     setLists: (state, action: PayloadAction<ListInterface[]>) => {
       state.lists = action.payload;
     },
-    setList: (state, action: PayloadAction<ListInterface>) => {
+    newListTasks: (state, action: PayloadAction<TaskInterface>) => {
       state.lists.forEach((list) => {
-        if (list.id === action.payload.id) {
-          list = action.payload;
+        if (list.id === action.payload.listId) {
+          list.tasks.push(action.payload);
         }
       });
     },
@@ -46,7 +48,7 @@ export const list = createSlice({
   },
 });
 
-export const { setLists, setList } = list.actions;
+export const { setLists, newListTasks } = list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
 
