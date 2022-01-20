@@ -12,7 +12,7 @@ export const apiWithList = emptySplitApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["List"],
+      invalidatesTags: ["List"], // TODO use dispatch instead in onQueryStarted
     }),
     archiveList: builder.mutation({
       query: ({ id, archive }: { id: number; archive: boolean }) => ({
@@ -20,7 +20,7 @@ export const apiWithList = emptySplitApi.injectEndpoints({
         method: "PUT",
         body: { archive },
       }),
-      invalidatesTags: ["List"],
+      invalidatesTags: ["List"], // TODO use dispatch instead in onQueryStarted
     }),
     updateList: builder.mutation({
       query: ({
@@ -38,14 +38,14 @@ export const apiWithList = emptySplitApi.injectEndpoints({
         method: "PATCH",
         body: { id, title, tasks, users },
       }),
-      invalidatesTags: ["List"],
+      invalidatesTags: ["List"], // TODO use dispatch instead in onQueryStarted
     }),
     deleteList: builder.mutation({
       query: (id: number) => ({
         url: "/list/" + id,
         method: "DELETE",
       }),
-      invalidatesTags: ["List"],
+      invalidatesTags: ["List"], // TODO use dispatch instead in onQueryStarted
     }),
   }),
 });

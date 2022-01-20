@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithTask } from "../services/task";
 import type { RootState } from "../store";
 
@@ -44,5 +44,7 @@ export const task = createSlice({
 export const { newTask, setTasks } = task.actions;
 
 export const selectTasks = (state: RootState) => state.task.tasks;
+export const selectTaskById = (id: number) =>
+  createSelector(selectTasks, (state) => console.log(state));
 
 export default task.reducer;

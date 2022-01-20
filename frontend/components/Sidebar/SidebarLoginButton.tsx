@@ -1,7 +1,7 @@
 import { Avatar, Button, Flex } from "@chakra-ui/react";
 import type { UserInterface } from "../../app/features/userSlice";
 import ColourModeButton from "../Layout/ColourModeButton";
-import CustomSpinner from "../Layout/CustomSpinner";
+import CustomSpinner from "../Icon/CustomSpinner";
 
 interface LoginButtonProps {
   isLoading: boolean;

@@ -9,39 +9,30 @@ import {
   ListItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-import {
-  Control,
+import type {
+  ControllerFieldState,
   ControllerRenderProps,
-  useController,
-  useFormContext,
+  UseFormStateReturn,
 } from "react-hook-form";
-import type { FormInputInterface } from "./ListCard";
+import type { FormInputInterface } from "../Lists/ListCard";
 
 interface ListTaskEmptyProps {
-  field: ControllerRenderProps<FormInputInterface, "task-new">;
-  control: Control<FormInputInterface, object>;
+  field: ControllerRenderProps<FormInputInterface, "taskNew">;
+  fieldState: ControllerFieldState;
+  formState: UseFormStateReturn<FormInputInterface>;
   triggerFormSubmit: () => void;
 }
 
-const ListTaskEmpty = ({
+const TaskEmpty = ({
   field,
-  control,
+  formState,
+  fieldState,
   triggerFormSubmit,
 }: ListTaskEmptyProps) => {
-  const formControl = useController({
-    name: field.name,
-    control,
-  });
-
-  const submitHandler = () => {
-    console.log("pressed");
-  };
-
   return (
     <ListItem
       display={"flex"}
-      // alignItems={"center"}
-      onKeyPress={(e) => e.key === "Enter" && submitHandler()}
+      onKeyPress={(e) => e.key === "Enter" && triggerFormSubmit()}
     >
       <ListIcon
         as={Checkbox}
@@ -52,21 +43,26 @@ const ListTaskEmpty = ({
           bg: useColorModeValue("gray.100", "gray.900"),
         }}
       />
-      <FormControl isInvalid={!!formControl.formState.errors["task-new"]}>
+      <FormControl isInvalid={!!formState.errors["taskNew"]}>
         <Editable
           color={useColorModeValue("gray.400", "gray.500")}
           defaultValue={""}
           display={"inline-block"}
           placeholder={"enter your task"}
           w={"full"}
-          onSubmit={triggerFormSubmit}
+          onSubmit={() => {
+            triggerFormSubmit();
+            if (formState.isSubmitSuccessful) {
+              field.value = "";
+            }
+          }}
         >
           <EditablePreview />
           <EditableInput {...field} rounded={"sm"} />
         </Editable>
-        {formControl.formState.errors["task-new"] && (
+        {formState.errors["taskNew"] && (
           <FormErrorMessage fontSize={"xs"}>
-            {formControl.formState.errors["task-new"].message}
+            {formState.errors["taskNew"].message}
           </FormErrorMessage>
         )}
       </FormControl>
@@ -74,4 +70,4 @@ const ListTaskEmpty = ({
   );
 };
 
-export default ListTaskEmpty;
+export default TaskEmpty;

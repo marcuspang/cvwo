@@ -7,9 +7,9 @@ import {
 import { selectUser } from "../../app/features/userSlice";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
-import AuthModal from "../UserModal/AuthModal";
-import SettingsModal from "../UserModal/SettingsModal";
-import LoginButton from "./LoginButton";
+import AuthModal from "../Modal/AuthModal";
+import SettingsModal from "../Modal/SettingsModal";
+import LoginButton from "./SidebarLoginButton";
 import SidebarItems from "./SidebarItems";
 
 interface SidebarContentProps extends BoxProps {}

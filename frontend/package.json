@@ -23,6 +23,7 @@
     "swr": "^1.1.2"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.0.2",
     "@types/node": "16.11.12",
     "@types/react": "17.0.37",
     "eslint": "8.4.1",

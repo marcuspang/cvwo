@@ -29,10 +29,32 @@ export const list = createSlice({
     setLists: (state, action: PayloadAction<ListInterface[]>) => {
       state.lists = action.payload;
     },
+    setListTitle: (
+      state,
+      action: PayloadAction<{ id: number; title: string }>
+    ) => {
+      state.lists.forEach((list) => {
+        if (list.id === action.payload.id) {
+          list.title = action.payload.title;
+        }
+      });
+    },
     newListTasks: (state, action: PayloadAction<TaskInterface>) => {
       state.lists.forEach((list) => {
         if (list.id === action.payload.listId) {
           list.tasks.push(action.payload);
+        }
+      });
+    },
+    removeListTask: (
+      state,
+      action: PayloadAction<{ listId: number; taskId: number }>
+    ) => {
+      state.lists.forEach((list) => {
+        if (list.id === action.payload.listId) {
+          list.tasks = list.tasks.filter(
+            (task) => task.id !== action.payload.taskId
+          );
         }
       });
     },
@@ -48,7 +70,8 @@ export const list = createSlice({
   },
 });
 
-export const { setLists, newListTasks } = list.actions;
+export const { setLists, newListTasks, setListTitle, removeListTask } =
+  list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
 
