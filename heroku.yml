@@ -3,7 +3,7 @@ build:
     release: 
       dockerfile: backend/Dockerfile
       target: builder
-    web: Dockerfile
+    web: backend/Dockerfile
 
 run:
   web: ./app -prod -port $PORT
