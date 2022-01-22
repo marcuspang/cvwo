@@ -52,6 +52,6 @@ func main() {
 	if !*prod {
 		log.Fatal(app.Listen("localhost" + *port))
 	} else {
-		log.Fatal(app.Listen("0.0.0.0" + *port))
+		log.Fatal(app.Listen("0.0.0.0:" + *port))
 	}
 }
