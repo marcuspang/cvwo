@@ -34,7 +34,8 @@ func GetTasksFromListId(c *fiber.Ctx) error {
 	}
 
 	// get user associated with listId given
-	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Users").Find(&models.User{Id: userId}); err != nil {
+	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Users").Find(&models.User{Id: userId}); 
+	err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "error finding user in list",
 		})
@@ -43,7 +44,7 @@ func GetTasksFromListId(c *fiber.Ctx) error {
 	// only return task if user is in list.Users
 	var tasks []models.Task
 	// return error if any
-	if err := database.DB.Model(&models.List{Id: uint(queries.ListId)}).Association("Tasks").Find(&tasks); err != nil {
+	if err := database.DB.Order("id").Model(&models.List{Id: uint(queries.ListId)}).Association("Tasks").Find(&tasks); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
@@ -100,7 +101,7 @@ func AddTask(c *fiber.Ctx) error {
 		StartDate: util.FormatJSDate(body.StartDate),
 		DueDate:   util.FormatJSDate(body.DueDate),
 		Done:      false,
-		Archived:   false,
+		Archived:  false,
 		ListId:    uint(body.ListId),
 	}
 

@@ -9,26 +9,17 @@ import {
   ListItem,
   useColorModeValue,
 } from "@chakra-ui/react";
-import type {
-  ControllerFieldState,
-  ControllerRenderProps,
-  UseFormStateReturn,
-} from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import type { FormInputInterface } from "../Lists/ListCard";
 
 interface ListTaskEmptyProps {
-  field: ControllerRenderProps<FormInputInterface, "taskNew">;
-  fieldState: ControllerFieldState;
-  formState: UseFormStateReturn<FormInputInterface>;
   triggerFormSubmit: () => void;
 }
 
-const TaskEmpty = ({
-  field,
-  formState,
-  fieldState,
-  triggerFormSubmit,
-}: ListTaskEmptyProps) => {
+const TaskEmpty = ({ triggerFormSubmit }: ListTaskEmptyProps) => {
+  const { control, resetField, setValue } =
+    useFormContext<FormInputInterface>();
+  const editableColour = useColorModeValue("gray.400", "gray.500");
   return (
     <ListItem
       display={"flex"}
@@ -43,29 +34,39 @@ const TaskEmpty = ({
           bg: useColorModeValue("gray.100", "gray.900"),
         }}
       />
-      <FormControl isInvalid={!!formState.errors["taskNew"]}>
-        <Editable
-          color={useColorModeValue("gray.400", "gray.500")}
-          defaultValue={""}
-          display={"inline-block"}
-          placeholder={"enter your task"}
-          w={"full"}
-          onSubmit={() => {
-            triggerFormSubmit();
-            if (formState.isSubmitSuccessful) {
-              field.value = "";
-            }
-          }}
-        >
-          <EditablePreview />
-          <EditableInput {...field} rounded={"sm"} />
-        </Editable>
-        {formState.errors["taskNew"] && (
-          <FormErrorMessage fontSize={"xs"}>
-            {formState.errors["taskNew"].message}
-          </FormErrorMessage>
+      <Controller
+        name={"newTask"}
+        control={control}
+        rules={{
+          min: { value: 1, message: "Please enter a task name" },
+        }}
+        defaultValue={""}
+        render={({ formState, field }) => (
+          <FormControl isInvalid={!!formState.errors["newTask"]}>
+            <Editable
+              color={editableColour}
+              display={"inline-block"}
+              placeholder={"enter your task"}
+              value={field.value}
+              w={"full"}
+              onSubmit={() => {
+                triggerFormSubmit();
+                if (formState.isSubmitSuccessful) {
+                  setValue("newTask", "");
+                }
+              }}
+            >
+              <EditablePreview />
+              <EditableInput {...field} rounded={"sm"} />
+            </Editable>
+            {formState.errors["newTask"] && (
+              <FormErrorMessage fontSize={"xs"}>
+                {formState.errors["newTask"].message}
+              </FormErrorMessage>
+            )}
+          </FormControl>
         )}
-      </FormControl>
+      />
     </ListItem>
   );
 };

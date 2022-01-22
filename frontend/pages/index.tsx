@@ -48,10 +48,8 @@ const Home: NextPage = () => {
         <Box
           w={"sm"}
           ml={4}
-          mt={-1}
-          position={"relative"}
+          verticalAlign={"top"}
           display={"inline-flex"}
-          top={"-10px"}
           shadow="md"
           rounded="md"
         >

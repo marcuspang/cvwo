@@ -8,50 +8,60 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { forwardRef } from "react";
-import type {
+import {
+  Controller,
   ControllerFieldState,
   ControllerRenderProps,
+  useFormContext,
   UseFormStateReturn,
 } from "react-hook-form";
 import type { FormInputInterface } from "./ListCard";
 import ListIcon from "./ListIconButton";
 
 interface ListTitleProps {
-  field: ControllerRenderProps<FormInputInterface, `title`>;
-  fieldState: ControllerFieldState;
-  formState: UseFormStateReturn<FormInputInterface>;
   triggerFormSubmit: () => void;
+  defaultValue: string;
   id: number;
 }
 
 const ListTitle = forwardRef<HTMLButtonElement, ListTitleProps>(
-  ({ formState, field, fieldState, triggerFormSubmit, id }, ref) => {
+  ({ triggerFormSubmit, defaultValue, id }, ref) => {
+    const { control } = useFormContext<FormInputInterface>();
+    const titleColour = useColorModeValue("gray.800", "white");
     return (
-      <FormControl isInvalid={!!formState.errors.title}>
-        <Editable
-          fontSize="lg"
-          fontWeight="bold"
-          color={useColorModeValue("gray.800", "white")}
-          value={field.value}
-          onSubmit={triggerFormSubmit}
-        >
-          <EditablePreview width={"calc(100% - 40px)"} mr={1} />
-          <EditableInput
-            {...field}
-            rounded={"sm"}
-            width={"calc(100% - 40px)"}
-            name="title"
-            mr={1}
-          />
-          <ListIcon id={id} />
-        </Editable>
-        {formState.errors.title && (
-          <FormErrorMessage m={0}>
-            {formState.errors.title.message}
-          </FormErrorMessage>
+      <Controller
+        name="title"
+        defaultValue={defaultValue}
+        control={control}
+        rules={{ required: "Please enter a title" }}
+        render={({ formState, field }) => (
+          <FormControl isInvalid={!!formState.errors.title}>
+            <Editable
+              fontSize="lg"
+              fontWeight="bold"
+              color={titleColour}
+              value={field.value}
+              onSubmit={triggerFormSubmit}
+            >
+              <EditablePreview width={"calc(100% - 40px)"} mr={1} />
+              <EditableInput
+                {...field}
+                rounded={"sm"}
+                width={"calc(100% - 40px)"}
+                name="title"
+                mr={1}
+              />
+              <ListIcon id={id} />
+            </Editable>
+            {formState.errors.title && (
+              <FormErrorMessage m={0}>
+                {formState.errors.title.message}
+              </FormErrorMessage>
+            )}
+            <Button hidden aria-hidden ref={ref} type="submit" />
+          </FormControl>
         )}
-        <Button hidden aria-hidden ref={ref} type="submit" />
-      </FormControl>
+      />
     );
   }
 );

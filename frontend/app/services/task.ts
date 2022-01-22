@@ -3,7 +3,7 @@ import type { TaskInterface } from "../features/taskSlice";
 
 export const apiWithTask = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
-    getTasksByUserId: builder.query({
+    getTasksByListId: builder.query({
       query: (userId: number) => "/task?listId=" + userId,
     }),
     getTaskById: builder.query({
@@ -51,6 +51,6 @@ export const {
   useArchiveTaskMutation,
   useDeleteTaskMutation,
   useGetTaskByIdQuery,
-  useGetTasksByUserIdQuery,
+  useGetTasksByListIdQuery,
   useUpdateTaskMutation,
 } = apiWithTask;

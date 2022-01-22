@@ -28,7 +28,7 @@ const DeleteModal = ({
         <ModalHeader>Confirm Delete?</ModalHeader>
         <ModalCloseButton />
         <ModalFooter>
-          <Button isLoading={isLoading} onClick={onConfirm} pr={2}>
+          <Button isLoading={isLoading} onClick={onConfirm} mr={2}>
             Confirm
           </Button>
           <Button onClick={onClose}>Close</Button>

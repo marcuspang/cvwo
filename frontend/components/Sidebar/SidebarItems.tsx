@@ -13,11 +13,11 @@ const SidebarItems = () => {
       color="gray.600"
       aria-label="Main Navigation"
     >
-      <SidebarItem icon={FaTasks} onClick={() => router.push("/")}>
-        Tasks
-      </SidebarItem>
-      <SidebarItem icon={FaList} onClick={() => router.push("/lists")}>
+      <SidebarItem icon={FaList} onClick={() => router.push("/")}>
         Lists
+      </SidebarItem>
+      <SidebarItem icon={FaTasks} onClick={() => router.push("/tasks")}>
+        Tasks
       </SidebarItem>
       <SidebarItem icon={FaCalendar} onClick={() => router.push("/calendar")}>
         Calendar

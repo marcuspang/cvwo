@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 
-// from https://stackoverflow.com/questions/56153797/horizontal-scrolling-on-react-component-using-vertical-mouse-wheel
+// from https://stackoverflow.com/a/63203862
 export function useHorizontalScroll() {
   const elementRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

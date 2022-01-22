@@ -3,7 +3,6 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
-	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -13,12 +12,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type RegisterBody struct {
+type AuthBody struct {
 	Username string `json:"username" xml:"username" form:"username"`
-	LoginBody
-}
-
-type LoginBody struct {
 	Email    string `json:"email" xml:"email" form:"email"`
 	Password string `json:"password" xml:"password" form:"password"`
 }
@@ -29,7 +24,7 @@ type UpdateBody struct {
 }
 
 func Register(c *fiber.Ctx) error {
-	var body RegisterBody
+	var body AuthBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
@@ -44,8 +39,6 @@ func Register(c *fiber.Ctx) error {
 		Password: password,
 	}
 
-	fmt.Println("register:", password)
-
 	// return any error in creation of user
 	if err := database.DB.Create(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -57,14 +50,14 @@ func Register(c *fiber.Ctx) error {
 }
 
 func Login(c *fiber.Ctx) error {
-	var body LoginBody
+	var body AuthBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
 	// retrieve user object using email
 	var user models.User
-	if err := database.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
+	if err := database.DB.Where("email = ? AND username = ?", body.Email, body.Username).First(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "user not found",
 		})

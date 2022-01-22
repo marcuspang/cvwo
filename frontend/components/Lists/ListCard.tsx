@@ -3,6 +3,7 @@ import { DevTool } from "@hookform/devtools";
 import { useRef, useState } from "react";
 import {
   Controller,
+  FieldErrors,
   FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
@@ -14,9 +15,12 @@ import {
   newListTasks,
   setListTitle,
 } from "../../app/features/listSlice";
-import type { TaskInterface } from "../../app/features/taskSlice";
+import { setTask, TaskInterface } from "../../app/features/taskSlice";
 import { useUpdateListMutation } from "../../app/services/list";
-import { useAddTaskMutation } from "../../app/services/task";
+import {
+  useAddTaskMutation,
+  useUpdateTaskMutation,
+} from "../../app/services/task";
 import { useAppDispatch } from "../../app/store";
 import TaskEmpty from "../Task/TaskEmpty";
 import TaskItem from "../Task/TaskItem";
@@ -28,8 +32,9 @@ interface ListProps {
 
 export interface FormInputInterface {
   title: string;
-  taskNew: string;
-  existingTask: { name: string }[];
+  newTask: string;
+  updatingTaskId: number;
+  existingTask: TaskInterface[];
 }
 
 // has one main form per list card instead of many small ones for
@@ -38,27 +43,31 @@ const ListCard = ({ listData }: ListProps) => {
   // redux hooks
   const [updateList] = useUpdateListMutation();
   const [addTask] = useAddTaskMutation();
+  const [updateTask] = useUpdateTaskMutation();
   const dispatch = useAppDispatch();
 
   // currentTitle is used to revert the title back to previous
   // validated title if empty title entered
   const [currentTitle, setCurrentTitle] = useState(listData.title);
+
+  const [updatingTaskIndex, setUpdatingTaskIndex] = useState(-1);
   // ref used to trigger form submission in children elements
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // react-hook-form hooks
   const form = useForm<FormInputInterface>({
     defaultValues: {
-      taskNew: "",
-      existingTask: listData.tasks?.map((task) => ({ name: task.name })) || [],
+      newTask: "",
+      updatingTaskId: -1,
+      existingTask: listData.tasks || [],
     },
   });
-  const { control, setValue, resetField, handleSubmit } = form;
+  const { control, setValue, resetField, handleSubmit, setError } = form;
   // field array to group array of existing tasks
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control,
     name: "existingTask",
-    keyName: "id",
+    keyName: "key",
   });
 
   const onSubmit: SubmitHandler<FormInputInterface> = async (values) => {
@@ -75,24 +84,43 @@ const ListCard = ({ listData }: ListProps) => {
         dispatch(setListTitle({ id: listData.id, title: values.title }));
         setCurrentTitle(values.title);
       }
-      if (values["taskNew"]) {
+
+      // check if there's a new task
+      if (values.newTask.length) {
         // add task to database
         const result = await addTask({
           dueDate: new Date().toISOString(),
           startDate: new Date().toISOString(),
           listId: listData.id,
-          name: values["taskNew"],
+          name: values.newTask,
         }).unwrap();
-        // update list on react-hook-form
-        append({ name: values["taskNew"] }); // TODO fix duplication bug
-        // update lists being displayed
+        // update list on react-hook-form so that the form can submit requests on new task
+        append({ ...result });
+        // update lists on redux (display)
         dispatch(newListTasks(result));
-        setValue("taskNew", "");
+        setValue("newTask", "");
+      }
+
+      // check if updatingTaskId exists and update the specific task
+      // need 0 as 0 is falsy
+      if (values.updatingTaskId >= 0) {
+        const result = await updateTask({
+          ...values.existingTask[values.updatingTaskId],
+        }).unwrap();
+        setValue("updatingTaskId", -1);
+        console.log(result);
+        update(values.updatingTaskId, { ...result });
+        dispatch(setTask(result));
       }
     } catch (e) {
-      console.log(e);
-      // const errorMessage = (e as FieldErrors).data.message;
-      // setError("title", { message: errorMessage });
+      const errorMessage = (e as FieldErrors).data.message;
+      if (errorMessage) {
+        if (errorMessage.includes("title")) {
+          setError("title", { message: errorMessage });
+        } else if (errorMessage.includes("task")) {
+          setError("newTask", { message: errorMessage });
+        }
+      }
     }
   };
 
@@ -107,9 +135,11 @@ const ListCard = ({ listData }: ListProps) => {
     }
   };
 
-  // to manually submit the form when onSubmit happens for the
-  // list title and tasks
-  const triggerFormSubmit = () => {
+  // to manually submit the form when onSubmit happens for the list title and tasks
+  const triggerFormSubmit = async (index?: number) => {
+    // as 0 returns false, need to check whether its defined instead
+    if (typeof index !== "undefined" && index >= 0)
+      setValue("updatingTaskId", index);
     submitButtonRef.current?.click();
   };
 
@@ -126,50 +156,25 @@ const ListCard = ({ listData }: ListProps) => {
       >
         <FormProvider {...form}>
           <form onSubmit={handleSubmit(onSubmit, onError)}>
-            <Controller
-              name="title"
+            <ListTitle
               defaultValue={currentTitle}
-              control={control}
-              rules={{ required: "Please enter a title" }}
-              render={(controlProps) => (
-                <ListTitle
-                  {...controlProps}
-                  id={listData.id}
-                  ref={submitButtonRef}
-                  triggerFormSubmit={triggerFormSubmit}
-                />
-              )}
+              id={listData.id}
+              ref={submitButtonRef}
+              triggerFormSubmit={triggerFormSubmit}
             />
             <List mt={2}>
               {fields.length &&
                 listData.tasks?.map((task: TaskInterface, index: number) => (
-                  <Controller
-                    key={fields[index].id}
-                    name={`existingTask.${task.id}.name`}
-                    control={control}
-                    defaultValue={fields[index].name}
-                    render={(controlProps) => (
-                      <TaskItem
-                        {...controlProps}
-                        task={task}
-                        triggerFormSubmit={triggerFormSubmit}
-                      />
-                    )}
+                  <TaskItem
+                    key={fields[index].key}
+                    task={task}
+                    index={index}
+                    defaultValue={task.name}
+                    triggerFormSubmit={triggerFormSubmit}
+                    remove={() => remove(index)}
                   />
                 ))}
-              <Controller
-                name={"taskNew"}
-                control={control}
-                rules={{
-                  min: { value: 1, message: "Please enter a task name" },
-                }}
-                render={(controlProps) => (
-                  <TaskEmpty
-                    {...controlProps}
-                    triggerFormSubmit={triggerFormSubmit}
-                  />
-                )}
-              />
+              <TaskEmpty triggerFormSubmit={triggerFormSubmit} />
             </List>
             <DevTool control={control} />
             {/* set up the dev tool for last task list*/}

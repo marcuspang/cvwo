@@ -7,13 +7,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  useToast,
 } from "@chakra-ui/react";
 import { useLogoutMutation } from "../../app/services/user";
 import { useAppDispatch } from "../../app/store";
-import {
-  setCredentials,
-  userInitialState,
-} from "../../app/features/userSlice";
+import { setCredentials, userInitialState } from "../../app/features/userSlice";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -21,6 +19,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
+  const toast = useToast();
   const [logout] = useLogoutMutation();
   const dispatch = useAppDispatch();
 
@@ -34,10 +33,17 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
 
         <ModalFooter>
           <Button
+            mr={2}
             onClick={() => {
               logout({});
               dispatch(setCredentials(userInitialState));
               onClose();
+              toast({
+                title: "Successfully logged out!",
+                status: "success",
+                duration: 2000,
+                isClosable: true,
+              });
             }}
           >
             Logout

@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import store from "../app/store";
 import theme from "../theme/theme";
 
+import "react-datepicker/dist/react-datepicker.css";
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>

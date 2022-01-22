@@ -1,13 +1,69 @@
-import { selectTaskById } from "../../app/features/taskSlice";
-import { useAppSelector } from "../../app/store";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/react";
+import { useRef } from "react";
+import { useFormContext } from "react-hook-form";
+import type { FormInputInterface } from "../Lists/ListCard";
+import EditTaskDatepicker from "../Task/EditTaskDatepicker";
 
 interface EditTaskModalProps {
-  taskId: number;
+  index: number;
+  isOpen: boolean;
+  onClose: () => void;
+  triggerFormSubmit: (index?: number) => void;
 }
 
-const EditTaskModal = ({ taskId }: EditTaskModalProps) => {
-  const task = useAppSelector(selectTaskById(1));
-  return <></>;
+const EditTaskModal = ({
+  index,
+  isOpen,
+  onClose,
+  triggerFormSubmit,
+}: EditTaskModalProps) => {
+  const { getValues, control, formState } =
+    useFormContext<FormInputInterface>();
+  const task = getValues(`existingTask.${index}`);
+  const initialRef = useRef<HTMLButtonElement>(null);
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>{task.name}</ModalHeader>
+        <ModalBody>
+          <EditTaskDatepicker
+            control={control}
+            index={index}
+            title="Start Date"
+            fieldName="startDate"
+          />
+          <EditTaskDatepicker
+            control={control}
+            index={index}
+            title="Due Date"
+            fieldName="dueDate"
+          />
+        </ModalBody>
+        <ModalCloseButton />
+        <ModalFooter>
+          <Button
+            isLoading={formState.isSubmitting}
+            onClick={() => triggerFormSubmit(index)}
+            ref={initialRef}
+            mr={2}
+          >
+            Confirm
+          </Button>
+          <Button onClick={onClose}>Close</Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
 };
 
 export default EditTaskModal;

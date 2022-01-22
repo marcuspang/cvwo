@@ -5,6 +5,7 @@ import (
 	"cvwo/models"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 type ArchiveBody struct {
@@ -29,7 +30,11 @@ func GetLists(c *fiber.Ctx) error {
 	var lists []models.List
 
 	// preload to get users and lists in one query
-	if err := database.DB.Order("id").Preload("Users").Preload("Tasks").Model(&models.User{Id: userId}).Association("Lists").Find(&lists); err != nil {
+	if err := database.DB.Order("id").Preload("Users", func(db *gorm.DB) *gorm.DB {
+		return db.Order("users.id ASC")
+	}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
+		return db.Order("tasks.id ASC")
+	}).Model(&models.User{Id: userId}).Association("Lists").Find(&lists); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "lists not found",
 		})

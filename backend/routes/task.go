@@ -7,7 +7,7 @@ import (
 )
 
 func SetupTaskRoutes(app fiber.Router) {
-	app.Get("/", controllers.GetTasksFromListId) // current user's tasks
+	app.Get("/", controllers.GetTasksFromListId) // current user's tasks based on listId
 	app.Get("/:id", controllers.GetTask)         // return task only if user has access
 	app.Post("/", controllers.AddTask)
 	app.Patch("/:id", controllers.UpdateTask)

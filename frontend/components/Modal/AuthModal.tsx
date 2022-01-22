@@ -14,13 +14,14 @@ import {
   ModalHeader,
   ModalOverlay,
   useColorModeValue,
+  useToast
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import {
   FieldErrors,
   SubmitErrorHandler,
   SubmitHandler,
-  useForm,
+  useForm
 } from "react-hook-form";
 import { setCredentials } from "../../app/features/userSlice";
 import { useLoginMutation, useRegisterMutation } from "../../app/services/user";
@@ -42,32 +43,33 @@ interface FormInputInterface {
 const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
   const initialRef = useRef<HTMLInputElement>(null);
   const [registering, setRegistering] = useState(true);
+  const toast = useToast();
 
-  const [register] = useRegisterMutation();
+  const [registerUser] = useRegisterMutation();
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
 
-  const form = useForm<FormInputInterface>();
+  const { formState, setError, watch, handleSubmit, register } =
+    useForm<FormInputInterface>();
   const onSubmit: SubmitHandler<FormInputInterface> = async (values) => {
-    if (registering) {
-      try {
-        await register({
+    try {
+      if (registering) {
+        await registerUser({
           username: values.username,
           email: values.email.toLowerCase(),
           password: values.password,
         }).unwrap();
         setRegistering((prev) => !prev);
-      } catch (e) {
-        const errorMessage = (e as FieldErrors).data.message;
-        if (errorMessage && errorMessage.includes("duplicate key")) {
-          form.setError("email", {
-            message: "Email has already been registered, please try again.",
-          });
-        }
-      }
-    } else {
-      try {
+        toast({
+          title: "Successfully registered!",
+          description: "Please click login to start creating lists.",
+          duration: 1000,
+          status: "success",
+          isClosable: true,
+        });
+      } else {
         const result = await login({
+          username: values.username,
           email: values.email,
           password: values.password,
         }).unwrap();
@@ -78,21 +80,49 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
           })
         );
         onClose();
-      } catch (e) {}
+        toast({
+          title: "Successfully logged in!",
+          status: "success",
+          isClosable: true,
+        });
+      }
+    } catch (e) {
+      const errorMessage = (e as FieldErrors).data.message;
+      if (errorMessage) {
+        if (errorMessage.includes("duplicate key")) {
+          setError("email", {
+            message: "Email has already been registered, please try again.",
+          });
+        }
+        if (errorMessage.includes("password")) {
+          setError("password", {
+            message: "Incorrect password",
+          });
+        }
+        if (errorMessage.includes("user")) {
+          setError("username", {
+            message: "Please check your username/email",
+          });
+          setError("email", {
+            message: "Please check your username/email",
+          });
+        }
+      }
     }
   };
 
+  // frontend error handling
   const onError: SubmitErrorHandler<FormInputInterface> = async (errors) => {
     for (let error in errors) {
       const errorValue = errors[error as keyof typeof errors];
       if (errorValue) {
-        form.setError(error as keyof typeof errors, errorValue);
+        setError(error as keyof typeof errors, errorValue);
       }
     }
   };
   // for password confirmation
   const password = useRef({});
-  password.current = form.watch("password", "");
+  password.current = watch("password", "");
 
   const linkColour = useColorModeValue("gray.800", "gray.200");
 
@@ -109,43 +139,43 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
           {registering ? "Create your account" : "Login"}
         </ModalHeader>
         <ModalCloseButton />
-        <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+        <form onSubmit={handleSubmit(onSubmit, onError)}>
           <ModalBody>
-            <FormControl isInvalid={!!form.formState.errors.username} mb={2}>
+            <FormControl isInvalid={!!formState.errors.username} mb={2}>
               <FormLabel htmlFor="username">Username</FormLabel>
               <Input
-                {...form.register("username", {
+                {...register("username", {
                   required: "Username required",
                   minLength: { value: 6, message: "Minimum length of 6" },
                   maxLength: { value: 50, message: "Maximum length of 50" },
                 })}
               />
-              {form.formState.errors.username && (
+              {formState.errors.username && (
                 <FormErrorMessage>
-                  {form.formState.errors.username.message}
+                  {formState.errors.username.message}
                 </FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={!!form.formState.errors.email} mb={2}>
+            <FormControl isInvalid={!!formState.errors.email} mb={2}>
               <FormLabel htmlFor="email">Email</FormLabel>
               <Input
-                {...form.register("email", {
+                {...register("email", {
                   required: "Email required",
                   validate: (email) =>
                     isValidEmail(email) || "Enter a valid email",
                 })}
                 type={"email"}
               />
-              {form.formState.errors.email && (
+              {formState.errors.email && (
                 <FormErrorMessage>
-                  {form.formState.errors.email.message}
+                  {formState.errors.email.message}
                 </FormErrorMessage>
               )}
             </FormControl>
-            <FormControl isInvalid={!!form.formState.errors.password} mb={2}>
+            <FormControl isInvalid={!!formState.errors.password} mb={2}>
               <FormLabel htmlFor="password">Password</FormLabel>
               <Input
-                {...form.register("password", {
+                {...register("password", {
                   required: "Password required",
                   minLength: {
                     value: 6,
@@ -154,15 +184,15 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
                 })}
                 type={"password"}
               />
-              {form.formState.errors.password && (
+              {formState.errors.password && (
                 <FormErrorMessage>
-                  {form.formState.errors.password.message}
+                  {formState.errors.password.message}
                 </FormErrorMessage>
               )}
             </FormControl>
             {registering && (
               <FormControl
-                isInvalid={!!form.formState.errors.passwordConfirmation}
+                isInvalid={!!formState.errors.passwordConfirmation}
                 mb={2}
               >
                 <FormLabel htmlFor="passwordConfirmation">
@@ -170,7 +200,7 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
                 </FormLabel>
 
                 <Input
-                  {...form.register("passwordConfirmation", {
+                  {...register("passwordConfirmation", {
                     required: "Please confirm your password",
                     validate: (value) =>
                       value === password.current ||
@@ -178,9 +208,9 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
                   })}
                   type={"password"}
                 />
-                {form.formState.errors.passwordConfirmation && (
+                {formState.errors.passwordConfirmation && (
                   <FormErrorMessage>
-                    {form.formState.errors.passwordConfirmation.message}
+                    {formState.errors.passwordConfirmation.message}
                   </FormErrorMessage>
                 )}
               </FormControl>
@@ -191,7 +221,6 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
               <Link
                 color={linkColour}
                 onClick={() => {
-                  // form.setErrors({});
                   setRegistering((prev) => !prev);
                 }}
               >
@@ -199,11 +228,7 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
               </Link>
             </Box>
             <Box>
-              <Button
-                mr={3}
-                isLoading={form.formState.isSubmitting}
-                type="submit"
-              >
+              <Button mr={3} isLoading={formState.isSubmitting} type="submit">
                 {registering ? "Sign Up" : "Log In"}
               </Button>
               <Button onClick={onClose}>Cancel</Button>

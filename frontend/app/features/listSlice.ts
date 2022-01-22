@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
 import { apiWithTask } from "../services/task";
+import { apiWithUser } from "../services/user";
 import type { RootState } from "../store";
 import type { TaskInterface } from "./taskSlice";
 import taskSlice from "./taskSlice";
@@ -65,6 +66,12 @@ export const list = createSlice({
       apiWithList.endpoints.getLists.matchFulfilled,
       (state, action) => {
         state.lists = action.payload;
+      }
+    );
+    builder.addMatcher(
+      apiWithUser.endpoints.logout.matchFulfilled,
+      (state, action) => {
+        state.lists = [];
       }
     );
   },
