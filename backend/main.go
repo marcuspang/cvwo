@@ -31,7 +31,7 @@ func main() {
 	}
 
 	// connect database and setup tables
-	database.Connect(*prod)
+	database.Connect()
 
 	// setup server application
 	app := fiber.New(fiber.Config{

@@ -3,6 +3,7 @@ package controllers
 import (
 	"cvwo/database"
 	"cvwo/models"
+	"flag"
 	"os"
 	"strconv"
 	"time"
@@ -96,6 +97,10 @@ func Login(c *fiber.Ctx) error {
 		Value:    signedToken,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
+	}
+	if flag.Lookup("prod").Value.(flag.Getter).Get().(bool) {
+		cookie.Secure = true
+		cookie.SameSite = "none"
 	}
 
 	c.Cookie(&cookie)

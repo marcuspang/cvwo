@@ -2,6 +2,7 @@ package database
 
 import (
 	"cvwo/models"
+	"flag"
 	"os"
 
 	"gorm.io/driver/postgres"
@@ -11,14 +12,14 @@ import (
 
 var DB *gorm.DB
 
-func Connect(prod bool) {
+func Connect() {
 	dsn, ok := os.LookupEnv("DB_URL")
 	if !ok {
 		panic("database url could not be found")
 	}
 
 	var config gorm.Config
-	if !prod {
+	if !flag.Lookup("prod").Value.(flag.Getter).Get().(bool) {
 		config = gorm.Config{
 			Logger: logger.Default.LogMode(logger.Info),
 		}
