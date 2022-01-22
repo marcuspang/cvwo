@@ -35,4 +35,4 @@ COPY --from=builder app .
 
 EXPOSE 4000
 
-CMD ["./app", "-prod", "-port :4000"]
+CMD ["./app"]
