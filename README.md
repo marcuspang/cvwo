@@ -9,13 +9,14 @@ Done by Marcus Pang Yu Yang
    - [x] Validation is done on frontend and backend
    - [ ] Users can edit their email and password
 2. Tasks
-   - [ ] Users can create/delete/update tasks
-   - [ ] Tasks are stored in a list
-   - [ ] Tasks have due dates and labels
+   - [x] Users can create/delete/update tasks
+   - [x] Tasks are stored in a list
+   - [ ] Tasks have due dates
+   - [ ] Tasks have labels
    - [ ] Tasks can be dragged and dropped into other lists
    - [ ] Tasks can be seen on the calendar
 3. Lists
-   - [ ] Users can create/delete/update lists
+   - [x] Users can create/delete/update lists
    - [ ] Lists can be sorted based on creation date, labels, alphabetical order
    - [ ] Lists can be assigned colours
 4. Calendar
