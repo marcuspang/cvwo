@@ -1,6 +1,4 @@
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { stat } from "fs";
-import { apiWithTask } from "../services/task";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 
 export interface TaskInterface {
@@ -24,32 +22,11 @@ const taskInitialState: TaskState = {
 export const task = createSlice({
   name: "task",
   initialState: taskInitialState,
-  reducers: {
-    setTasks: (state, action: PayloadAction<TaskInterface[]>) => {
-      state.tasks = action.payload;
-    },
-    newTask: (state, action: PayloadAction<TaskInterface>) => {
-      state.tasks.push(action.payload);
-    },
-    setTask: (state, action: PayloadAction<TaskInterface>) => {
-      state.tasks.forEach((task, index) => {
-        if (task.id === action.payload.id) {
-          state.tasks[index] = action.payload;
-        }
-      });
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addMatcher(
-      apiWithTask.endpoints.getTasksByListId.matchFulfilled,
-      (state, action: PayloadAction<TaskInterface[]>) => {
-        state.tasks = action.payload;
-      }
-    );
-  },
+  reducers: {},
+  extraReducers: (builder) => {},
 });
 
-export const { newTask, setTasks, setTask } = task.actions;
+// export const {} = task.actions;
 
 export const selectTasks = (state: RootState) => state.task.tasks;
 export const selectTaskById = (id: number) =>

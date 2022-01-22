@@ -1,27 +1,20 @@
+import { Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
-import { selectLists } from "../app/features/listSlice";
-import { selectUser } from "../app/features/userSlice";
 import { useGetListsQuery } from "../app/services/list";
-import { useGetTasksByListIdQuery } from "../app/services/task";
-import { useAppSelector } from "../app/store";
 import Layout from "../components/Layout/Layout";
+import TaskTable from "../components/TaskTable/TaskTable";
 
 const TasksPage: NextPage = () => {
-  const { data: lists } = useGetListsQuery({});
-  const [userId, setUserId] = useState(0);
-  useEffect(() => {
-    if (lists && lists.id) {
-      setUserId(lists.id);
-    }
-  }, []);
-  console.log(lists);
+  const { isLoading } = useGetListsQuery({});
 
-  const { data } = useGetTasksByListIdQuery(userId, {
-    skip: !!userId,
-  });
-  console.log(data);
-  return <Layout>hello</Layout>;
+  return (
+    <Layout>
+      <Text as="h1" fontSize={"xl"} fontWeight={"bold"} ml={4} mt={4}>
+        Task Overview
+      </Text>
+      <TaskTable />
+    </Layout>
+  );
 };
 
 export default TasksPage;

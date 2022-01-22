@@ -1,10 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
-import { apiWithTask } from "../services/task";
 import { apiWithUser } from "../services/user";
 import type { RootState } from "../store";
 import type { TaskInterface } from "./taskSlice";
-import taskSlice from "./taskSlice";
 import type { UserInterface } from "./userSlice";
 
 export interface ListInterface {
@@ -12,7 +10,7 @@ export interface ListInterface {
   title: string;
   archived: boolean;
   users: UserInterface[];
-  tasks: TaskInterface[]; // TODO update task type
+  tasks: TaskInterface[];
 }
 
 interface ListState {
@@ -81,5 +79,12 @@ export const { setLists, newListTasks, setListTitle, removeListTask } =
   list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
+export const selectAllTasks = (state: RootState) => {
+  let tasks: TaskInterface[] = [];
+  state.list.lists.forEach((list) => {
+    tasks = tasks.concat(list.tasks);
+  });
+  return tasks;
+};
 
 export default list.reducer;
