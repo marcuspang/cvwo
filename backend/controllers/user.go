@@ -181,13 +181,13 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	database.DB.First(&user, userId)
-	if body.Username != "" {
-		user.Username = body.Username
+	if err := database.DB.First(&user, userId).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "user not found",
+		})
 	}
-	if body.Email != "" {
-		user.Email = body.Email
-	}
+	user.Username = body.Username
+	user.Email = body.Email
 
 	if err := database.DB.Save(&user).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

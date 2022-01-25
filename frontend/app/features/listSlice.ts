@@ -29,6 +29,9 @@ export const list = createSlice({
     setLists: (state, action: PayloadAction<ListInterface[]>) => {
       state.lists = action.payload;
     },
+    removeListById: (state, action: PayloadAction<number>) => {
+      state.lists = state.lists.filter((list) => list.id !== action.payload);
+    },
     setListTitle: (
       state,
       action: PayloadAction<{ id: number; title: string }>
@@ -93,6 +96,7 @@ export const {
   setListTitle,
   removeListTask,
   updateListTask,
+  removeListById
 } = list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;

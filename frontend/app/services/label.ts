@@ -1,4 +1,5 @@
 import { emptySplitApi } from ".";
+import type { LabelInterface } from "../features/labelSlice";
 
 export const apiWithLabel = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -24,17 +25,13 @@ export const apiWithLabel = emptySplitApi.injectEndpoints({
       query: ({
         id,
         name,
+        archived,
         tasks,
         colour,
-      }: {
-        id: number;
-        name: string;
-        tasks: number[]; // id of tasks
-        colour: string;
-      }) => ({
+      }: LabelInterface) => ({
         url: "/label/" + id,
         method: "PATCH",
-        body: { name, tasks, colour },
+        body: { name, archived, tasks, colour },
       }),
     }),
     deleteLabel: builder.mutation({

@@ -1,5 +1,4 @@
 import { Box, List, useColorModeValue } from "@chakra-ui/react";
-import { DevTool } from "@hookform/devtools";
 import { useRef, useState } from "react";
 import {
   FieldErrors,
@@ -50,7 +49,6 @@ const ListCard = ({ listData }: ListProps) => {
   // validated title if empty title entered
   const [currentTitle, setCurrentTitle] = useState(listData.title);
 
-  const [updatingTaskIndex, setUpdatingTaskIndex] = useState(-1);
   // ref used to trigger form submission in children elements
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -162,20 +160,21 @@ const ListCard = ({ listData }: ListProps) => {
             />
             <List mt={2}>
               {fields.length &&
-                listData.tasks?.map((task: TaskInterface, index: number) => (
-                  <TaskItem
-                    key={fields[index].key}
-                    task={task}
-                    index={index}
-                    defaultValue={task.name}
-                    triggerFormSubmit={triggerFormSubmit}
-                    remove={() => remove(index)}
-                  />
-                ))}
+                listData.tasks?.map(
+                  (task: TaskInterface, index: number) =>
+                    !task.deleted && (
+                      <TaskItem
+                        key={fields[index].key}
+                        task={task}
+                        index={index}
+                        defaultValue={task.name}
+                        triggerFormSubmit={triggerFormSubmit}
+                        remove={() => remove(index)}
+                      />
+                    )
+                )}
               <TaskEmpty triggerFormSubmit={triggerFormSubmit} />
             </List>
-            <DevTool control={control} />
-            {/* set up the dev tool for last task list*/}
           </form>
         </FormProvider>
       </Box>

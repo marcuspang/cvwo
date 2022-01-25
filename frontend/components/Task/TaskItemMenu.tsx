@@ -8,7 +8,10 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { removeListTask } from "../../app/features/listSlice";
-import { useDeleteTaskMutation } from "../../app/services/task";
+import {
+  useArchiveTaskMutation,
+  useDeleteTaskMutation,
+} from "../../app/services/task";
 import { useAppDispatch } from "../../app/store";
 import DropdownIcon from "../Icon/DropdownIcon";
 import DeleteModal from "../Modal/DeleteModal";
@@ -29,7 +32,7 @@ const TaskItemMenu = ({
   remove,
   triggerFormSubmit,
 }: TaskMenuProps) => {
-  const [deleteTask, { isLoading }] = useDeleteTaskMutation();
+  const [archiveTask, { isLoading }] = useArchiveTaskMutation();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const {
     isOpen: editIsOpen,
@@ -44,7 +47,7 @@ const TaskItemMenu = ({
     if (deleting) {
       (async () => {
         // delete on database
-        await deleteTask(taskId);
+        await archiveTask({ id: taskId, archive: true });
         // remove on redux
         dispatch(removeListTask({ listId, taskId }));
         onClose();

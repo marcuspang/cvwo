@@ -10,7 +10,9 @@ export const apiWithTask = emptySplitApi.injectEndpoints({
       query: (id: number) => "/task/" + id,
     }),
     addTask: builder.mutation({
-      query: (body: Omit<TaskInterface, "id" | "done" | "labels">) => ({
+      query: (
+        body: Omit<TaskInterface, "id" | "done" | "labels" | "deleted">
+      ) => ({
         url: "/task",
         method: "POST",
         body,
@@ -38,7 +40,7 @@ export const apiWithTask = emptySplitApi.injectEndpoints({
     }),
     archiveTask: builder.mutation({
       query: ({ id, archive }: { id: number; archive: boolean }) => ({
-        url: "/list/" + id + "/archive",
+        url: "/task/" + id + "/archive",
         method: "PUT",
         body: { archive },
       }),

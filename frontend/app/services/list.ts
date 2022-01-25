@@ -1,4 +1,5 @@
 import { emptySplitApi } from ".";
+import type { ListInterface } from "../features/listSlice";
 
 export const apiWithList = emptySplitApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -31,8 +32,8 @@ export const apiWithList = emptySplitApi.injectEndpoints({
       }: {
         id: number;
         title: string;
-        tasks: number[]; // id of tasks
-        users: number[]; // id of users
+        tasks: number[];
+        users: number[];
       }) => ({
         url: "/list/" + id,
         method: "PATCH",

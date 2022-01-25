@@ -174,21 +174,25 @@ func UpdateList(c *fiber.Ctx) error {
 	// once user is in the list, find list object and update each
 	// field accordingly
 	database.DB.First(&list)
-	if body.Title != "" {
-		list.Title = body.Title
-	}
+	list.Title = body.Title
 	if len(body.Tasks) > 0 {
 		var tasks []models.Task
 
 		database.DB.Where("id IN ?", body.Tasks).Find(&tasks)
 		list.Tasks = tasks
+	} else {
+		list.Tasks = nil
 	}
+
 	if len(body.Users) > 0 {
 		var users []models.User
 
 		database.DB.Where("id IN ?", body.Users).Find(&users)
 		list.Users = users
+	} else {
+		list.Users = nil
 	}
+
 	// if update transaction has error, return it
 	if err := database.DB.Save(&list).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

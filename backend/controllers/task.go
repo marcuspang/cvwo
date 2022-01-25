@@ -136,24 +136,24 @@ func UpdateTask(c *fiber.Ctx) error {
 	// only update task if user is in list.Users
 	var task models.Task
 
-	database.DB.First(&task, taskId)
+	if err := database.DB.First(&task, taskId).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "task not found",
+		})
+	}
 
-	task.Done = body.Done // always passed for now
+	task.Done = body.Done
 	task.ListId = uint(body.ListId)
-	if body.DueDate != "" {
-		task.DueDate = util.FormatJSDate(body.DueDate)
-	}
-	if body.Name != "" {
-		task.Name = body.Name
-	}
-	if body.StartDate != "" {
-		task.StartDate = util.FormatJSDate(body.StartDate)
-	}
+	task.DueDate = util.FormatJSDate(body.DueDate)
+	task.Name = body.Name
+	task.StartDate = util.FormatJSDate(body.StartDate)
 	if len(body.Labels) > 0 {
 		var labels []models.Label
 
 		database.DB.Where("id IN ?", body.Labels).Find(&labels)
 		task.Labels = labels
+	} else {
+		task.Labels = nil
 	}
 	if err := database.DB.Save(&task).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

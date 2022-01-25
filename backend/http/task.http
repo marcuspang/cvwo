@@ -12,7 +12,7 @@ GET {{baseURL}}?listId=2
 
 ###
 # Get task by id
-GET {{baseURL}}/7
+GET {{baseURL}}/5
 
 ###
 # Add task to list with given listId

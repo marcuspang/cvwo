@@ -162,17 +162,15 @@ func UpdateLabel(c *fiber.Ctx) error {
 		})
 	}
 
-	if body.Name != "" {
-		label.Name = body.Name
-	}
+	label.Name = body.Name
+	label.Colour = body.Colour
 	if len(body.Tasks) > 0 {
 		var tasks []models.Task
 
 		database.DB.Where("id IN ?", body.Tasks).Find(&tasks)
 		label.Tasks = tasks
-	}
-	if body.Colour != "" {
-		label.Colour = body.Colour
+	} else {
+		label.Tasks = nil
 	}
 
 	if err := database.DB.Save(&label).Error; err != nil {

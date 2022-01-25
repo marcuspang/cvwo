@@ -5,9 +5,6 @@ export const emptySplitApi = createApi({
   tagTypes: ["User", "List", "Label"],
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.BACKEND_URL,
-    prepareHeaders: (headers) => {
-      return headers;
-    },
     credentials: "include",
   }),
   endpoints: () => ({}),

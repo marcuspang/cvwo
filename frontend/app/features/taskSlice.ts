@@ -10,6 +10,7 @@ export interface TaskInterface {
   done: boolean;
   labels: number[];
   listId: number;
+  deleted: boolean;
 }
 export interface TaskQueryInterface {
   id: number;
@@ -19,27 +20,5 @@ export interface TaskQueryInterface {
   done: boolean;
   labels: LabelInterface[];
   listId: number;
+  deleted: boolean;
 }
-
-interface TaskState {
-  tasks: TaskInterface[];
-}
-
-const taskInitialState: TaskState = {
-  tasks: [],
-};
-
-export const task = createSlice({
-  name: "task",
-  initialState: taskInitialState,
-  reducers: {},
-  extraReducers: (builder) => {},
-});
-
-// export const {  } = task.actions;
-
-export const selectTasks = (state: RootState) => state.task.tasks;
-// export const selectTaskById = (id: number) =>
-//   createSelector(selectTasks, (state) => state);
-
-export default task.reducer;
