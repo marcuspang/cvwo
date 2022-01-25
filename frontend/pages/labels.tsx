@@ -1,20 +1,19 @@
 import { Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import { useGetListsQuery } from "../app/services/list";
+import { useGetLabelsQuery } from "../app/services/label";
+import LabelTable from "../components/Label/LabelTable";
 import Layout from "../components/Layout/Layout";
-import TaskTable from "../components/Task/TaskTable";
 
-const TasksPage: NextPage = () => {
-  const { isLoading } = useGetListsQuery({});
-
+const LabelsPage: NextPage = () => {
+  const {} = useGetLabelsQuery({});
   return (
     <Layout>
       <Text as="h1" fontSize={"xl"} fontWeight={"bold"} ml={4} mt={4}>
-        Task Overview
+        Label Overview
       </Text>
-      <TaskTable />
+      <LabelTable />
     </Layout>
   );
 };
 
-export default TasksPage;
+export default LabelsPage;

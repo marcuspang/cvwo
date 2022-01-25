@@ -7,11 +7,10 @@ import type { TaskInterface } from "./taskSlice";
 export interface LabelInterface {
   id: number;
   name: string;
-  startDate: string; // ISO format
-  dueDate: string; // ISO format
   archived: boolean;
   tasks: TaskInterface[];
   userId: number;
+  colour: string;
 }
 
 interface LabelState {
@@ -29,13 +28,22 @@ export const label = createSlice({
     addLabel: (state, action: PayloadAction<LabelInterface>) => {
       state.labels.push(action.payload);
     },
-    assignLabel: (
+    updateTaskLabels: (
       state,
-      action: PayloadAction<{ labelId: number; task: TaskInterface }>
+      action: PayloadAction<{ taskId: number; labelIds: number[] }>
     ) => {
       state.labels.forEach((label) => {
-        if (label.id === action.payload.labelId) {
-          label.tasks.push(action.payload.task);
+        if (!action.payload.labelIds.includes(label.id)) {
+          label.tasks = label.tasks.filter(
+            (task) => task.id !== action.payload.taskId
+          );
+        }
+      });
+    },
+    updateLabel: (state, action: PayloadAction<LabelInterface>) => {
+      state.labels.forEach((label, index) => {
+        if (label.id === action.payload.id) {
+          state.labels[index] = action.payload;
         }
       });
     },
@@ -50,7 +58,7 @@ export const label = createSlice({
   },
 });
 
-export const { addLabel, assignLabel } = label.actions;
+export const { addLabel, updateTaskLabels, updateLabel } = label.actions;
 
 export const selectLabels = (state: RootState) => state.label.labels;
 export const selectLabelsByTaskId = (taskId: number) =>

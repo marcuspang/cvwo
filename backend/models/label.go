@@ -9,5 +9,6 @@ type Label struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 	Tasks     []Task    `gorm:"many2many:task_label" json:"tasks"`
-	UserId    uint      `gorm:"not null" json:"userId"`
+	Colour    string    `json:"colour"`
+	UserId    uint      `json:"userId"`
 }

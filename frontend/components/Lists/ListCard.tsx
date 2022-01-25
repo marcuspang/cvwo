@@ -71,7 +71,6 @@ const ListCard = ({ listData }: ListProps) => {
   });
 
   const onSubmit: SubmitHandler<FormInputInterface> = async (values) => {
-    console.log("form values", values);
     try {
       // check if title changed
       if (currentTitle !== values.title) {
@@ -108,9 +107,8 @@ const ListCard = ({ listData }: ListProps) => {
           ...values.existingTask[values.updatingTaskId],
         }).unwrap();
         setValue("updatingTaskId", -1);
-        console.log(result);
         update(values.updatingTaskId, { ...result });
-        dispatch(updateListTask({ listId: listData.id, task: result }));
+        dispatch(updateListTask(result));
       }
     } catch (e) {
       const errorMessage =
@@ -128,7 +126,6 @@ const ListCard = ({ listData }: ListProps) => {
   // errors from validating the fields on frontend
   // TODO add same validation for backend?
   const onError: SubmitErrorHandler<FormInputInterface> = async (errors) => {
-    console.log("errors", errors);
     if (errors.title?.message) {
       resetField("title", {
         defaultValue: currentTitle,

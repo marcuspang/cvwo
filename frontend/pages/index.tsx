@@ -7,9 +7,9 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Layout from "../components/Layout/Layout";
-import ListModal from "../components/Lists/ListModal";
 import ListNew from "../components/Lists/ListNew";
 import Lists from "../components/Lists/Lists";
+import ListModal from "../components/Modal/ListModal";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 
 const Home: NextPage = () => {

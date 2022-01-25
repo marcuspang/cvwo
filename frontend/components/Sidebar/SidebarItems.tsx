@@ -1,6 +1,6 @@
 import { Flex } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FaCalendar, FaList, FaTasks } from "react-icons/fa";
+import { FaAddressBook, FaBook, FaCalendar, FaList, FaTasks } from "react-icons/fa";
 import SidebarItem from "./SidebarItem";
 
 const SidebarItems = () => {
@@ -19,8 +19,14 @@ const SidebarItems = () => {
       <SidebarItem icon={FaTasks} onClick={() => router.push("/tasks")}>
         Tasks
       </SidebarItem>
+      <SidebarItem icon={FaAddressBook} onClick={() => router.push("/labels")}>
+        Labels
+      </SidebarItem>
       <SidebarItem icon={FaCalendar} onClick={() => router.push("/calendar")}>
         Calendar
+      </SidebarItem>
+      <SidebarItem icon={FaBook} onClick={() => router.push("/archive")}>
+        Archive
       </SidebarItem>
     </Flex>
   );

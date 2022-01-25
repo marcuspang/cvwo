@@ -81,11 +81,13 @@ const ListModal = ({ isOpen, onClose }: ListModalProps) => {
             <Button
               type="submit"
               isLoading={form.formState.isSubmitting}
-              variant={"ghost"}
+              variant={"messenger"}
             >
               Submit
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose} ml={2} variant={"ghost"}>
+              Cancel
+            </Button>
           </ModalFooter>
         </form>
       </ModalContent>

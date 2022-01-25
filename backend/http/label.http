@@ -43,7 +43,7 @@ DELETE {{baseURL}}/2
 
 ###
 # archive/unarchive label
-PUT {{baseURL}}/1/archive
+PUT {{baseURL}}/2/archive
 Content-Type: application/json
 
 {

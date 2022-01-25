@@ -8,13 +8,15 @@ import (
 )
 
 type AddLabelBody struct {
-	Name  string `json:"name" xml:"name" form:"name"`
-	Tasks []int  `json:"tasks" xml:"tasks" form:"tasks"` // list of task ids
+	Name   string `json:"name" xml:"name" form:"name"`
+	Tasks  []int  `json:"tasks" xml:"tasks" form:"tasks"` // list of task ids
+	Colour string `json:"colour" xml:"colour" form:"colour"`
 }
 
 type UpdateLabelBody struct {
-	Name  string `json:"name" xml:"name" form:"name"`
-	Tasks []int  `json:"tasks" xml:"tasks" form:"tasks"` // list of task ids
+	Name   string `json:"name" xml:"name" form:"name"`
+	Tasks  []int  `json:"tasks" xml:"tasks" form:"tasks"` // list of task ids
+	Colour string `json:"colour" xml:"colour" form:"colour"`
 }
 
 type ArchiveLabelBody struct {
@@ -118,7 +120,6 @@ func DeleteLabel(c *fiber.Ctx) error {
 			"message": "error finding label with associated user",
 		})
 	}
-
 	if err := database.DB.Model(&models.User{Id: userId}).Association("Labels").Delete(&label); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "error deleting association with user",
@@ -170,6 +171,10 @@ func UpdateLabel(c *fiber.Ctx) error {
 		database.DB.Where("id IN ?", body.Tasks).Find(&tasks)
 		label.Tasks = tasks
 	}
+	if body.Colour != "" {
+		label.Colour = body.Colour
+	}
+
 	if err := database.DB.Save(&label).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
@@ -194,14 +199,7 @@ func ArchiveLabel(c *fiber.Ctx) error {
 		return err
 	}
 
-	label := models.Label{Id: uint(labelId), UserId: userId}
-
-	if err := database.DB.First(&label).Error; err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "error finding associated user",
-		})
-	}
-	label.Archived = body.Archive
+	label := models.Label{Id: uint(labelId), UserId: userId, Archived: body.Archive}
 
 	if err := database.DB.Save(&label).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

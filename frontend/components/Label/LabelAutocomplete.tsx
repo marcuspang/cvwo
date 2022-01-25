@@ -1,73 +1,83 @@
 import { CUIAutoComplete, Item } from "chakra-ui-autocomplete";
+import { useState } from "react";
 import {
   addLabel,
-  assignLabel,
+  LabelInterface,
   selectLabels,
   selectLabelsByTaskId,
+  updateTaskLabels,
 } from "../../app/features/labelSlice";
+import { updateListTask } from "../../app/features/listSlice";
 import type { TaskInterface } from "../../app/features/taskSlice";
-import {
-  useAddLabelMutation,
-  useUpdateLabelMutation,
-} from "../../app/services/label";
+import { useAddLabelMutation } from "../../app/services/label";
+import { useUpdateTaskMutation } from "../../app/services/task";
 import { useAppDispatch, useAppSelector } from "../../app/store";
+import randomColour from "../../util/randomColour";
 
 interface LabelAutocompleteProps {
   task: TaskInterface;
 }
 const LabelAutocomplete = ({ task }: LabelAutocompleteProps) => {
-  const currentLabels = useAppSelector(selectLabelsByTaskId(task.id));
   const labels = useAppSelector(selectLabels);
+  const currentLabels = useAppSelector(selectLabelsByTaskId(task.id));
   const dispatch = useAppDispatch();
   const [addNewLabel, { isLoading }] = useAddLabelMutation();
-  const [updateLabel, {}] = useUpdateLabelMutation();
+  const [updateTask, {}] = useUpdateTaskMutation();
+
+  const [selected, setSelected] = useState(
+    currentLabels.map((item) => ({
+      label: item.name,
+      value: item.id.toString(),
+    }))
+  );
+  const [available, setAvailable] = useState(
+    labels.map((item) => ({
+      label: item.name,
+      value: item.id.toString(),
+    }))
+  );
 
   const handleCreateItem = async (item: Item) => {
     const result = await addNewLabel({
       name: item.value,
       tasks: [task.id],
+      colour: randomColour(),
     }).unwrap();
+
+    setAvailable((curr) => [...curr, item]);
+    setSelected((curr) => [...curr, item]);
     dispatch(addLabel(result));
   };
 
-  const handleSelectedItemsChange = (selectedItems?: Item[]) => {
+  const handleSelectedItemsChange = async (selectedItems?: Item[]) => {
     if (selectedItems) {
-      selectedItems.forEach(async (item) => {
-        // if any selected item is in the currentLabels, update the selected labels
-        if (!currentLabels.filter((label) => label.id !== +item.value).length) {
-          try {
-            const result = await updateLabel({
-              id: +item.value,
-              name: item.label,
-              tasks: [task.id],
-            }).unwrap();
-            dispatch(
-              assignLabel({
-                labelId: +item.value,
-                task,
-              })
-            );
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      });
+      try {
+        const result = (await updateTask({
+          ...task,
+          labels: selectedItems.map((item) => +item.value),
+        }).unwrap()) as Omit<TaskInterface, "labels"> & {
+          labels: LabelInterface[];
+        };
+        setSelected(selectedItems);
+        dispatch(
+          updateTaskLabels({
+            taskId: task.id,
+            labelIds: result.labels && result.labels.map((label) => label.id),
+          })
+        );
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   return (
     <CUIAutoComplete
       label="Labels"
-      placeholder="Choose labels"
+      placeholder="Type something!"
       onCreateItem={handleCreateItem}
-      items={labels.map((item) => ({
-        label: item.name,
-        value: item.id.toString(),
-      }))}
-      selectedItems={currentLabels.map((item) => ({
-        label: item.name,
-        value: item.id.toString(),
-      }))}
+      items={available}
+      selectedItems={selected}
       labelStyleProps={{ marginBottom: -1 }}
       inputStyleProps={{
         borderRightRadius: 0,
@@ -82,6 +92,9 @@ const LabelAutocomplete = ({ task }: LabelAutocompleteProps) => {
       listStyleProps={{
         marginTop: -2,
         boxShadow: "md",
+      }}
+      tagStyleProps={{
+        marginBottom: 0,
       }}
       onSelectedItemsChange={(changes) =>
         handleSelectedItemsChange(changes.selectedItems)

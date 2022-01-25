@@ -11,21 +11,24 @@ import {
   useEditableControls,
 } from "@chakra-ui/react";
 import { FaCheck, FaTrashAlt } from "react-icons/fa";
-import { useDeleteListMutation } from "../../app/services/list";
+import {
+  useArchiveListMutation,
+  useDeleteListMutation,
+} from "../../app/services/list";
 import DeleteModal from "../Modal/DeleteModal";
 
 interface ListIconProps {
   id: number;
 }
 
-const ListIcon = ({ id }: ListIconProps) => {
+const ListTitleButton = ({ id }: ListIconProps) => {
   const { isEditing } = useEditableControls();
-  const [deleteList, { isLoading }] = useDeleteListMutation();
+  const [archiveList, { isLoading }] = useArchiveListMutation();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onConfirm = async () => {
     // delete on database
-    await deleteList(id);
+    await archiveList({ id, archive: true });
     onClose();
   };
 
@@ -52,4 +55,4 @@ const ListIcon = ({ id }: ListIconProps) => {
   );
 };
 
-export default ListIcon;
+export default ListTitleButton;

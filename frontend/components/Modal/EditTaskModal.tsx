@@ -8,15 +8,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
-import { CUIAutoComplete } from "chakra-ui-autocomplete";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useFormContext } from "react-hook-form";
-import {
-  selectLabels,
-  selectLabelsByTaskId,
-} from "../../app/features/labelSlice";
-import { useAddLabelMutation } from "../../app/services/label";
-import { useAppSelector } from "../../app/store";
 import LabelAutocomplete from "../Label/LabelAutocomplete";
 import type { FormInputInterface } from "../Lists/ListCard";
 import EditTaskDatepicker from "../Task/EditTaskDatepicker";

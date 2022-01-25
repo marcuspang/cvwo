@@ -7,25 +7,17 @@ export const apiWithLabel = emptySplitApi.injectEndpoints({
       providesTags: ["Label"],
     }),
     addLabel: builder.mutation({
-      query: (body: { name: string; tasks: number[] }) => ({
+      query: (body: { name: string; tasks: number[]; colour: string }) => ({
         url: "/label",
         method: "POST",
         body,
       }),
     }),
-    removeLabelFromTask: builder.mutation({
-      query: ({
-        taskId,
-        labelId,
-        remove,
-      }: {
-        taskId: number;
-        labelId: number;
-        remove: boolean;
-      }) => ({
-        url: "/label/" + labelId + "/" + taskId + "/remove",
+    archiveLabel: builder.mutation({
+      query: ({ labelId, archive }: { labelId: number; archive: boolean }) => ({
+        url: "/label/" + labelId + "/archive",
         method: "PUT",
-        body: { remove },
+        body: { archive },
       }),
     }),
     updateLabel: builder.mutation({
@@ -33,14 +25,16 @@ export const apiWithLabel = emptySplitApi.injectEndpoints({
         id,
         name,
         tasks,
+        colour,
       }: {
         id: number;
         name: string;
         tasks: number[]; // id of tasks
+        colour: string;
       }) => ({
         url: "/label/" + id,
         method: "PATCH",
-        body: { name, tasks },
+        body: { name, tasks, colour },
       }),
     }),
     deleteLabel: builder.mutation({
@@ -56,6 +50,6 @@ export const {
   useAddLabelMutation,
   useDeleteLabelMutation,
   useGetLabelsQuery,
-  useRemoveLabelFromTaskMutation,
+  useArchiveLabelMutation,
   useUpdateLabelMutation,
 } = apiWithLabel;

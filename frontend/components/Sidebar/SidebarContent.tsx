@@ -3,14 +3,15 @@ import {
   BoxProps,
   useColorModeValue,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 import { selectUser } from "../../app/features/userSlice";
 import { useGetCurrentUserQuery } from "../../app/services/user";
 import { useAppSelector } from "../../app/store";
 import AuthModal from "../Modal/AuthModal";
 import SettingsModal from "../Modal/SettingsModal";
-import LoginButton from "./SidebarLoginButton";
 import SidebarItems from "./SidebarItems";
+import LoginButton from "./SidebarLoginButton";
 
 interface SidebarContentProps extends BoxProps {}
 
@@ -21,14 +22,16 @@ const SidebarContent = (props: SidebarContentProps) => {
   const user = useAppSelector(selectUser);
 
   return (
-    <Box
+    <VStack
       as="nav"
       pos="fixed"
       top="0"
       left="0"
       zIndex="sticky"
       h="full"
+      justifyContent={"space-between"}
       p={3}
+      gap={0}
       overflowX="hidden"
       overflowY="auto"
       bg={useColorModeValue("white", "gray.700")}
@@ -49,7 +52,7 @@ const SidebarContent = (props: SidebarContentProps) => {
         user={data}
       />
       <SidebarItems />
-    </Box>
+    </VStack>
   );
 };
 

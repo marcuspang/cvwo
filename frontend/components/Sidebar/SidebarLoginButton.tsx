@@ -21,7 +21,7 @@ const LoginButton = ({
   }
 
   return (
-    <Flex align={"center"} w="full" pb={4}>
+    <Flex align={"center"} w="full" pb={2}>
       <Button mr={3} px={3} w={"full"} onClick={onOpen} variant={"ghost"}>
         <Avatar size={"xs"} mr={3} />
         {!user || isError ? "Login here!" : "Hello " + user.username}

@@ -34,7 +34,7 @@ const DeleteModal = ({
       <AlertDialogOverlay />
       <AlertDialogContent>
         <AlertDialogCloseButton />
-        <AlertDialogHeader>Confirm Delete?</AlertDialogHeader>
+        <AlertDialogHeader>Confirm delete?</AlertDialogHeader>
         <AlertDialogBody>
           <Text>You can restore this item later in your archives</Text>
         </AlertDialogBody>

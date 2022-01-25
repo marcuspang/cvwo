@@ -1,15 +1,20 @@
 import {
+  Badge,
   Checkbox,
   Editable,
   EditableInput,
   EditablePreview,
+  Flex,
   FormControl,
   ListIcon,
   ListItem,
+  Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Controller, useFormContext } from "react-hook-form";
+import { selectLabelsByTaskId } from "../../app/features/labelSlice";
 import type { TaskInterface } from "../../app/features/taskSlice";
+import { useAppSelector } from "../../app/store";
 import type { FormInputInterface } from "../Lists/ListCard";
 import TaskItemMenu from "./TaskItemMenu";
 
@@ -31,6 +36,7 @@ const TaskItem = ({
   const { control, setValue, getValues } = useFormContext<FormInputInterface>();
   const editableColour = useColorModeValue("gray.600", "gray.300");
   const checkboxHoverBackground = useColorModeValue("gray.100", "gray.900");
+  const labels = useAppSelector(selectLabelsByTaskId(task.id));
 
   return (
     <ListItem
@@ -71,6 +77,12 @@ const TaskItem = ({
           </FormControl>
         )}
       />
+      <Flex gap={1}>
+        {labels.slice(0, 2).map((label) => (
+          <Badge key={label.id} lineHeight={"6"}>{label.name}</Badge>
+        ))}
+        {labels.length > 2 && <Text>...</Text>}
+      </Flex>
       <TaskItemMenu
         taskId={task.id}
         listId={task.listId}

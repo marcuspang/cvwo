@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { apiWithList } from "../services/list";
 import { apiWithUser } from "../services/user";
 import type { RootState } from "../store";
-import type { TaskInterface } from "./taskSlice";
+import type { TaskInterface, TaskQueryInterface } from "./taskSlice";
 import type { UserInterface } from "./userSlice";
 
 export interface ListInterface {
@@ -39,15 +39,12 @@ export const list = createSlice({
         }
       });
     },
-    updateListTask: (
-      state,
-      action: PayloadAction<{ listId: number; task: TaskInterface }>
-    ) => {
+    updateListTask: (state, action: PayloadAction<TaskInterface>) => {
       state.lists.forEach((list, listIndex) => {
         if (list.id === action.payload.listId) {
           list.tasks.forEach((task, taskIndex) => {
-            if (task.id === action.payload.task.id) {
-              state.lists[listIndex].tasks[taskIndex] = action.payload.task;
+            if (task.id === action.payload.id) {
+              state.lists[listIndex].tasks[taskIndex] = action.payload;
             }
           });
         }
@@ -77,8 +74,8 @@ export const list = createSlice({
     // update redux state with every call of getLists
     builder.addMatcher(
       apiWithList.endpoints.getLists.matchFulfilled,
-      (state, action) => {
-        state.lists = action.payload;
+      (state, action: PayloadAction<ListInterface[]>) => {
+        state.lists = action.payload.filter((list) => !list.archived);
       }
     );
     builder.addMatcher(

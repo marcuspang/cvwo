@@ -1,5 +1,6 @@
-import { createSelector, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
+import type { LabelInterface } from "./labelSlice";
 
 export interface TaskInterface {
   id: number;
@@ -8,6 +9,15 @@ export interface TaskInterface {
   dueDate: string; // ISO format
   done: boolean;
   labels: number[];
+  listId: number;
+}
+export interface TaskQueryInterface {
+  id: number;
+  name: string;
+  startDate: string; // ISO format
+  dueDate: string; // ISO format
+  done: boolean;
+  labels: LabelInterface[];
   listId: number;
 }
 
@@ -29,7 +39,7 @@ export const task = createSlice({
 // export const {  } = task.actions;
 
 export const selectTasks = (state: RootState) => state.task.tasks;
-export const selectTaskById = (id: number) =>
-  createSelector(selectTasks, (state) => state);
+// export const selectTaskById = (id: number) =>
+//   createSelector(selectTasks, (state) => state);
 
 export default task.reducer;

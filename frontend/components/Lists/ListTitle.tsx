@@ -10,7 +10,7 @@ import {
 import { forwardRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import type { FormInputInterface } from "./ListCard";
-import ListIcon from "./ListIconButton";
+import ListTitleButton from "./ListTitleButton";
 
 interface ListTitleProps {
   triggerFormSubmit: () => void;
@@ -45,7 +45,7 @@ const ListTitle = forwardRef<HTMLButtonElement, ListTitleProps>(
                 name="title"
                 mr={1}
               />
-              <ListIcon id={id} />
+              <ListTitleButton id={id} />
             </Editable>
             {formState.errors.title && (
               <FormErrorMessage m={0}>
