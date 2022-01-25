@@ -1,6 +1,5 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import type { LabelInterface } from "./labelSlice";
 
 export interface TaskInterface {
   id: number;
@@ -8,7 +7,7 @@ export interface TaskInterface {
   startDate: string; // ISO format
   dueDate: string; // ISO format
   done: boolean;
-  labels: LabelInterface[];
+  labels: number[];
   listId: number;
 }
 

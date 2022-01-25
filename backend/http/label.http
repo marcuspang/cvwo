@@ -24,7 +24,7 @@ Content-Type: application/json
 
 {
     "name": "potato",
-    "tasks": []
+    "tasks": [2]
 }
 
 ###

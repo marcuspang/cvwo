@@ -11,7 +11,9 @@ import {
 import { CUIAutoComplete } from "chakra-ui-autocomplete";
 import { useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import { selectLabelsByTaskId } from "../../app/features/labelSlice";
 import { useAddLabelMutation } from "../../app/services/label";
+import { useAppSelector } from "../../app/store";
 import type { FormInputInterface } from "../Lists/ListCard";
 import EditTaskDatepicker from "../Task/EditTaskDatepicker";
 
@@ -45,8 +47,11 @@ const EditTaskModal = ({
   const { getValues, control, formState } =
     useFormContext<FormInputInterface>();
   const task = getValues(`existingTask.${index}`);
+  const label = useAppSelector(selectLabelsByTaskId(task.id));
   const initialRef = useRef<HTMLButtonElement>(null);
   const [addLabel, { isLoading }] = useAddLabelMutation();
+
+  console.log(label);
 
   // ----
   const [pickerItems, setPickerItems] = useState(countries);
@@ -87,10 +92,7 @@ const EditTaskModal = ({
             label="Labels"
             placeholder="Choose labels"
             onCreateItem={handleCreateItem}
-            items={task.labels.map((label) => ({
-              label: label.name,
-              value: label.name,
-            }))}
+            items={countries}
             selectedItems={selectedItems}
             labelStyleProps={{ marginBottom: -1 }}
             inputStyleProps={{

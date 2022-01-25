@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ListInterface, selectLists } from "../../app/features/listSlice";
+import { useGetLabelsQuery } from "../../app/services/label";
 import { useGetListsQuery } from "../../app/services/list";
 import { useAppSelector } from "../../app/store";
 import CustomSpinner from "../Icon/CustomSpinner";
@@ -13,8 +14,14 @@ const Lists = () => {
       skip,
     }
   );
+  const { data: labelData, isLoading: labelIsLoading } = useGetLabelsQuery(
+    {},
+    {
+      skip,
+    }
+  );
   const lists = useAppSelector(selectLists);
-  console.log(data);
+  console.log(labelData, data);
 
   useEffect(() => {
     if (skip) {

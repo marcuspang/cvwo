@@ -25,7 +25,7 @@ func GetUserLabels(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 	var labels []models.Label
 
-	if err := database.DB.Where("user_id = ?", userId).Find(&labels).Error; err != nil {
+	if err := database.DB.Preload("Tasks").Where("user_id = ?", userId).Find(&labels).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})

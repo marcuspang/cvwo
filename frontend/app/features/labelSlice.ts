@@ -1,6 +1,8 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { apiWithLabel } from "../services/label";
 import { apiWithList } from "../services/list";
 import type { RootState } from "../store";
+import type { TaskInterface } from "./taskSlice";
 
 export interface LabelInterface {
   id: number;
@@ -8,7 +10,7 @@ export interface LabelInterface {
   startDate: string; // ISO format
   dueDate: string; // ISO format
   archived: boolean;
-  tasks: number[];
+  tasks: TaskInterface[];
   userId: number;
 }
 
@@ -16,13 +18,13 @@ interface LabelState {
   labels: LabelInterface[];
 }
 
-const taskInitialState: LabelState = {
+const labelInitialState: LabelState = {
   labels: [],
 };
 
-export const task = createSlice({
+export const label = createSlice({
   name: "task",
-  initialState: taskInitialState,
+  initialState: labelInitialState,
   reducers: {
     setTask: (state, action: PayloadAction<LabelInterface>) => {
       state.labels.forEach((task, index) => {
@@ -34,18 +36,23 @@ export const task = createSlice({
   },
   extraReducers: (builder) => {
     builder.addMatcher(
-      apiWithList.endpoints.getLists.matchFulfilled,
-      (state, action) => {
-        
+      apiWithLabel.endpoints.getLabels.matchFulfilled,
+      (state, action: PayloadAction<LabelInterface[]>) => {
+        state.labels = action.payload;
+        console.log(action.payload);
       }
     );
   },
 });
 
-// export const { setTask } = task.actions;
+export const { setTask } = label.actions;
 
-// export const selectTasks = (state: RootState) => state.task.tasks;
-// export const selectTaskById = (id: number) =>
-//   createSelector(selectTasks, (state) => state);
+export const selectLabels = (state: RootState) => state.label.labels;
+export const selectLabelsByTaskId = (taskId: number) =>
+  createSelector(selectLabels, (state) =>
+    state.map(
+      (label) => label.tasks && label.tasks.filter((task) => task.id === taskId)
+    )
+  );
 
-// export default task.reducer;
+export default label.reducer;

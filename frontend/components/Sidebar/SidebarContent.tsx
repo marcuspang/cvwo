@@ -2,7 +2,7 @@ import {
   Box,
   BoxProps,
   useColorModeValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import { selectUser } from "../../app/features/userSlice";
 import { useGetCurrentUserQuery } from "../../app/services/user";
