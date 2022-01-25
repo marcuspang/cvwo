@@ -2,7 +2,6 @@ import { Box, List, useColorModeValue } from "@chakra-ui/react";
 import { DevTool } from "@hookform/devtools";
 import { useRef, useState } from "react";
 import {
-  Controller,
   FieldErrors,
   FormProvider,
   SubmitErrorHandler,
@@ -14,8 +13,9 @@ import {
   ListInterface,
   newListTasks,
   setListTitle,
+  updateListTask,
 } from "../../app/features/listSlice";
-import { setTask, TaskInterface } from "../../app/features/taskSlice";
+import type { TaskInterface } from "../../app/features/taskSlice";
 import { useUpdateListMutation } from "../../app/services/list";
 import {
   useAddTaskMutation,
@@ -110,10 +110,11 @@ const ListCard = ({ listData }: ListProps) => {
         setValue("updatingTaskId", -1);
         console.log(result);
         update(values.updatingTaskId, { ...result });
-        dispatch(setTask(result));
+        dispatch(updateListTask({ listId: listData.id, task: result }));
       }
     } catch (e) {
-      const errorMessage = (e as FieldErrors).data.message;
+      const errorMessage =
+        e && (e as FieldErrors).data && (e as FieldErrors).data.message;
       if (errorMessage) {
         if (errorMessage.includes("title")) {
           setError("title", { message: errorMessage });

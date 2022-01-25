@@ -78,7 +78,11 @@ const ListModal = ({ isOpen, onClose }: ListModalProps) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button type="submit" isLoading={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              isLoading={form.formState.isSubmitting}
+              variant={"ghost"}
+            >
               Submit
             </Button>
             <Button onClick={onClose}>Cancel</Button>

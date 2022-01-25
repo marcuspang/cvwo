@@ -8,7 +8,7 @@ const theme = extendTheme({
   components: {
     Button: {
       variants: {
-        solid: (props: any) => ({
+        default: (props: any) => ({
           bg: props.colorMode === "light" ? "white" : "gray.700",
           _hover: {
             bg: props.colorMode === "light" ? "gray.100" : "gray.800",

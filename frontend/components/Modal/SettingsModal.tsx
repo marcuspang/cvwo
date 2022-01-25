@@ -34,6 +34,7 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
         <ModalFooter>
           <Button
             mr={2}
+            colorScheme={"messenger"}
             onClick={() => {
               logout({});
               dispatch(setCredentials(userInitialState));
@@ -48,7 +49,9 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           >
             Logout
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose} variant={"ghost"}>
+            Cancel
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

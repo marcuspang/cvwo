@@ -8,6 +8,7 @@ import {
 import type { NextPage } from "next";
 import Layout from "../components/Layout/Layout";
 import ListModal from "../components/Lists/ListModal";
+import ListNew from "../components/Lists/ListNew";
 import Lists from "../components/Lists/Lists";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 
@@ -45,21 +46,7 @@ const Home: NextPage = () => {
         }}
       >
         <Lists />
-        <Box
-          w={"sm"}
-          ml={4}
-          verticalAlign={"top"}
-          display={"inline-flex"}
-          shadow="md"
-          rounded="md"
-        >
-          <IconButton
-            aria-label="Add list"
-            icon={<PlusSquareIcon />}
-            onClick={onOpen}
-            w={"full"}
-          />
-        </Box>
+        <ListNew onOpen={onOpen} />
       </Box>
     </Layout>
   );

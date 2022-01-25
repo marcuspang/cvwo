@@ -34,7 +34,7 @@ Content-Type: application/json
 
 {
     "name":"asd",
-    "labels": [],
+    "tasks": [],
 }
 
 ### 

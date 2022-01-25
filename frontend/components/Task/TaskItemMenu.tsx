@@ -60,6 +60,7 @@ const TaskItemMenu = ({
         <MenuButton
           as={IconButton}
           aria-label="Options"
+          variant={"ghost"}
           size={"sm"}
           icon={<DropdownIcon />}
         />

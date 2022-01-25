@@ -32,6 +32,7 @@ const ListIcon = ({ id }: ListIconProps) => {
   return (
     <>
       <IconButton
+        variant={"ghost"}
         aria-label={isEditing ? "Submit list changes" : "Delete list"}
         icon={<FaTrashAlt />}
         onClick={() => {

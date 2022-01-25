@@ -14,14 +14,14 @@ import {
   ModalHeader,
   ModalOverlay,
   useColorModeValue,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import {
   FieldErrors,
   SubmitErrorHandler,
   SubmitHandler,
-  useForm
+  useForm,
 } from "react-hook-form";
 import { setCredentials } from "../../app/features/userSlice";
 import { useLoginMutation, useRegisterMutation } from "../../app/services/user";
@@ -231,7 +231,9 @@ const AuthModal = ({ isOpen, onClose }: LoginModalProps) => {
               <Button mr={3} isLoading={formState.isSubmitting} type="submit">
                 {registering ? "Sign Up" : "Log In"}
               </Button>
-              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={onClose} variant={"ghost"}>
+                Cancel
+              </Button>
             </Box>
           </ModalFooter>
         </form>

@@ -4,7 +4,7 @@ import {
   Flex,
   IconButton,
   useColorModeValue,
-  useDisclosure
+  useDisclosure,
 } from "@chakra-ui/react";
 import Sidebar from "../Sidebar/Sidebar";
 
@@ -35,6 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
         >
           {/* for opening menu in mobile */}
           <IconButton
+            variant={"ghost"}
             aria-label="Menu"
             display={{ base: "inline-flex", md: "none" }}
             onClick={sidebar.onOpen}

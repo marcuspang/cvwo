@@ -10,5 +10,5 @@ type User struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"-"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"-"`
 	Lists     []List    `gorm:"many2many:user_list" json:"-"`
-	Labels    []Label   `json:"labels"`
+	Labels    []Label   `json:"-"`
 }

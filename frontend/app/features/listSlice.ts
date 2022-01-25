@@ -21,6 +21,7 @@ const listInitialState: ListState = {
   lists: [],
 };
 
+// TODO refactor task reducers into task state
 export const list = createSlice({
   name: "list",
   initialState: listInitialState,
@@ -35,6 +36,20 @@ export const list = createSlice({
       state.lists.forEach((list) => {
         if (list.id === action.payload.id) {
           list.title = action.payload.title;
+        }
+      });
+    },
+    updateListTask: (
+      state,
+      action: PayloadAction<{ listId: number; task: TaskInterface }>
+    ) => {
+      state.lists.forEach((list, listIndex) => {
+        if (list.id === action.payload.listId) {
+          list.tasks.forEach((task, taskIndex) => {
+            if (task.id === action.payload.task.id) {
+              state.lists[listIndex].tasks[taskIndex] = action.payload.task;
+            }
+          });
         }
       });
     },
@@ -75,7 +90,7 @@ export const list = createSlice({
   },
 });
 
-export const { setLists, newListTasks, setListTitle, removeListTask } =
+export const { setLists, newListTasks, setListTitle, removeListTask, updateListTask } =
   list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
