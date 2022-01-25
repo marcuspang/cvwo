@@ -10,4 +10,5 @@ func Setup(app *fiber.App) {
 	SetupUserRoutes(app.Group("/user"))
 	SetupListRoutes(app.Group("/list", middleware.Protected))
 	SetupTaskRoutes(app.Group("/task", middleware.Protected))
+	SetupLabelRoutes(app.Group("/label", middleware.Protected))
 }

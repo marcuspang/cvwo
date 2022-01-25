@@ -33,7 +33,7 @@ func GetLists(c *fiber.Ctx) error {
 	if err := database.DB.Order("id").Preload("Users", func(db *gorm.DB) *gorm.DB {
 		return db.Order("users.id ASC")
 	}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-		return db.Order("tasks.id ASC")
+		return db.Preload("Labels").Order("tasks.id ASC")
 	}).Model(&models.User{Id: userId}).Association("Lists").Find(&lists); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "lists not found",

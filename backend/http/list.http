@@ -14,7 +14,7 @@ POST {{baseURL}}
 Content-Type: application/json
 
 {
-    "title": "potato2"
+    "title": "one"
 }
 
 ###
@@ -23,7 +23,7 @@ PUT {{baseURL}}/1/archive
 Content-Type: application/json
 
 {
-    "archive": false
+    "archive": true
 }
 
 ###

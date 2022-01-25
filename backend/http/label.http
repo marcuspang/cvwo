@@ -1,0 +1,51 @@
+# Label API
+
+### 
+# Constants
+@baseURL = http://localhost:4000/label
+
+###
+# Get current user's labels
+GET {{baseURL}}/current
+
+###
+# Get labels
+GET {{baseURL}}/
+
+
+###
+# Get label by id
+GET {{baseURL}}/1
+
+###
+# Add label to task ids given
+POST {{baseURL}}
+Content-Type: application/json
+
+{
+    "name": "potato",
+    "tasks": []
+}
+
+###
+# Update label
+PATCH {{baseURL}}/2
+Content-Type: application/json
+
+{
+    "name":"asd",
+    "labels": [],
+}
+
+### 
+# Delete label
+DELETE {{baseURL}}/2
+
+###
+# Remove/un-remove label
+PUT {{baseURL}}/1/1/archive
+Content-Type: application/json
+
+{
+    "remove": true
+}

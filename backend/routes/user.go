@@ -12,6 +12,7 @@ func SetupUserRoutes(app fiber.Router) {
 	app.Post("/logout", controllers.Logout)
 	app.Get("/current", middleware.Protected, controllers.Current)
 	app.Post("/", controllers.Register)
+	app.Get("/", controllers.GetUsers)
 	app.Get("/:id", controllers.GetUser)
 	app.Patch("/:id", middleware.Protected, controllers.UpdateUser)
 	app.Delete("/:id", middleware.Protected, controllers.DeleteUser)

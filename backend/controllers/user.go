@@ -150,6 +150,17 @@ func GetUser(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+func GetUsers(c *fiber.Ctx) error {
+	var users []models.User
+
+	if err := database.DB.Find(&users).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "users not found",
+		})
+	}
+	return c.JSON(users)
+}
+
 func UpdateUser(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 	id, err := c.ParamsInt("id")
