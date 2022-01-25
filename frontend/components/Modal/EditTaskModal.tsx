@@ -11,9 +11,13 @@ import {
 import { CUIAutoComplete } from "chakra-ui-autocomplete";
 import { useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { selectLabelsByTaskId } from "../../app/features/labelSlice";
+import {
+  selectLabels,
+  selectLabelsByTaskId,
+} from "../../app/features/labelSlice";
 import { useAddLabelMutation } from "../../app/services/label";
 import { useAppSelector } from "../../app/store";
+import LabelAutocomplete from "../Label/LabelAutocomplete";
 import type { FormInputInterface } from "../Lists/ListCard";
 import EditTaskDatepicker from "../Task/EditTaskDatepicker";
 
@@ -24,20 +28,6 @@ interface EditTaskModalProps {
   triggerFormSubmit: (index?: number) => void;
 }
 
-export interface Item {
-  label: string;
-  value: string;
-}
-const countries = [
-  { value: "ghana", label: "Ghana" },
-  { value: "nigeria", label: "Nigeria" },
-  { value: "kenya", label: "Kenya" },
-  { value: "southAfrica", label: "South Africa" },
-  { value: "unitedStates", label: "United States" },
-  { value: "canada", label: "Canada" },
-  { value: "germany", label: "Germany" },
-];
-
 const EditTaskModal = ({
   index,
   isOpen,
@@ -47,28 +37,7 @@ const EditTaskModal = ({
   const { getValues, control, formState } =
     useFormContext<FormInputInterface>();
   const task = getValues(`existingTask.${index}`);
-  const label = useAppSelector(selectLabelsByTaskId(task.id));
   const initialRef = useRef<HTMLButtonElement>(null);
-  const [addLabel, { isLoading }] = useAddLabelMutation();
-
-  console.log(label);
-
-  // ----
-  const [pickerItems, setPickerItems] = useState(countries);
-  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-
-  const handleCreateItem = async (item: Item) => {
-    await addLabel({ name: item.value, tasks: [task.id] });
-    setPickerItems((curr) => [...curr, item]);
-    setSelectedItems((curr) => [...curr, item]);
-  };
-
-  const handleSelectedItemsChange = (selectedItems?: Item[]) => {
-    if (selectedItems) {
-      setSelectedItems(selectedItems);
-    }
-  };
-  // ---
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>
@@ -88,31 +57,7 @@ const EditTaskModal = ({
             title="Due Date"
             fieldName="dueDate"
           />
-          <CUIAutoComplete
-            label="Labels"
-            placeholder="Choose labels"
-            onCreateItem={handleCreateItem}
-            items={countries}
-            selectedItems={selectedItems}
-            labelStyleProps={{ marginBottom: -1 }}
-            inputStyleProps={{
-              borderRightRadius: 0,
-            }}
-            toggleButtonStyleProps={{
-              marginLeft: "0 !important",
-              borderLeftRadius: 0,
-            }}
-            listItemStyleProps={{
-              transition: "0.1s all ease",
-            }}
-            listStyleProps={{
-              marginTop: -2,
-              boxShadow: "md",
-            }}
-            onSelectedItemsChange={(changes) =>
-              handleSelectedItemsChange(changes.selectedItems)
-            }
-          />
+          <LabelAutocomplete task={task} />
         </ModalBody>
         <ModalCloseButton />
         <ModalFooter>

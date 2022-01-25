@@ -4,7 +4,7 @@ export const emptySplitApi = createApi({
   reducerPath: "api",
   tagTypes: ["User", "List", "Label"],
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_BACKEND_URL,
+    baseUrl: process.env.BACKEND_URL,
     prepareHeaders: (headers) => {
       return headers;
     },

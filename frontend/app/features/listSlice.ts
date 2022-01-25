@@ -90,8 +90,13 @@ export const list = createSlice({
   },
 });
 
-export const { setLists, newListTasks, setListTitle, removeListTask, updateListTask } =
-  list.actions;
+export const {
+  setLists,
+  newListTasks,
+  setListTitle,
+  removeListTask,
+  updateListTask,
+} = list.actions;
 
 export const selectLists = (state: RootState) => state.list.lists;
 export const selectAllTasks = (state: RootState) => {

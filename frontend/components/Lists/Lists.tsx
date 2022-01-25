@@ -21,7 +21,6 @@ const Lists = () => {
     }
   );
   const lists = useAppSelector(selectLists);
-  console.log(labelData, data);
 
   useEffect(() => {
     if (skip) {

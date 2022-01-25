@@ -16,7 +16,7 @@ const ListNew = ({ onOpen }: ListNewProps) => {
       rounded="md"
     >
       <IconButton
-        variant={"ghost"}
+        variant={"outline"}
         aria-label="Add list"
         icon={<PlusSquareIcon />}
         onClick={onOpen}

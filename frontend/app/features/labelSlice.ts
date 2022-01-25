@@ -23,13 +23,19 @@ const labelInitialState: LabelState = {
 };
 
 export const label = createSlice({
-  name: "task",
+  name: "label",
   initialState: labelInitialState,
   reducers: {
-    setTask: (state, action: PayloadAction<LabelInterface>) => {
-      state.labels.forEach((task, index) => {
-        if (task.id === action.payload.id) {
-          state.labels[index] = action.payload;
+    addLabel: (state, action: PayloadAction<LabelInterface>) => {
+      state.labels.push(action.payload);
+    },
+    assignLabel: (
+      state,
+      action: PayloadAction<{ labelId: number; task: TaskInterface }>
+    ) => {
+      state.labels.forEach((label) => {
+        if (label.id === action.payload.labelId) {
+          label.tasks.push(action.payload.task);
         }
       });
     },
@@ -39,20 +45,27 @@ export const label = createSlice({
       apiWithLabel.endpoints.getLabels.matchFulfilled,
       (state, action: PayloadAction<LabelInterface[]>) => {
         state.labels = action.payload;
-        console.log(action.payload);
       }
     );
   },
 });
 
-export const { setTask } = label.actions;
+export const { addLabel, assignLabel } = label.actions;
 
 export const selectLabels = (state: RootState) => state.label.labels;
 export const selectLabelsByTaskId = (taskId: number) =>
-  createSelector(selectLabels, (state) =>
-    state.map(
-      (label) => label.tasks && label.tasks.filter((task) => task.id === taskId)
-    )
-  );
+  createSelector(selectLabels, (state) => {
+    let result: Omit<LabelInterface, "tasks">[] = [];
+    state.forEach((label) => {
+      if (
+        label.tasks &&
+        label.tasks.filter((task) => task.id === taskId).length
+      ) {
+        const { tasks, ...rest } = label;
+        result = result.concat(rest);
+      }
+    });
+    return result;
+  });
 
 export default label.reducer;

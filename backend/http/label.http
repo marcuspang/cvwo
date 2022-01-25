@@ -42,8 +42,8 @@ Content-Type: application/json
 DELETE {{baseURL}}/2
 
 ###
-# Remove/un-remove label
-PUT {{baseURL}}/1/1/archive
+# archive/unarchive label
+PUT {{baseURL}}/1/archive
 Content-Type: application/json
 
 {

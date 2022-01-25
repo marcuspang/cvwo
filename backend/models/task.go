@@ -12,5 +12,5 @@ type Task struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"-"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"-"`
 	ListId    uint      `gorm:"not null" json:"listId"`
-	Labels    []Label   `gorm:"many2many:task_label" json:"-"`
+	Labels    []Label   `gorm:"many2many:task_label" json:"labels"`
 }

@@ -17,15 +17,15 @@ type UpdateLabelBody struct {
 	Tasks []int  `json:"tasks" xml:"tasks" form:"tasks"` // list of task ids
 }
 
-type RemoveLabelBody struct {
-	Remove bool `json:"remove" xml:"remove" form:"remove"`
+type ArchiveLabelBody struct {
+	Archive bool `json:"archive" xml:"archive" form:"archive"`
 }
 
 func GetUserLabels(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
 	var labels []models.Label
 
-	if err := database.DB.Preload("Tasks").Where("user_id = ?", userId).Find(&labels).Error; err != nil {
+	if err := database.DB.Preload("Tasks").Where("user_id = ? AND archived = ?", userId, false).Find(&labels).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": err.Error(),
 		})
@@ -180,17 +180,16 @@ func UpdateLabel(c *fiber.Ctx) error {
 	})
 }
 
-func RemoveLabel(c *fiber.Ctx) error {
+func ArchiveLabel(c *fiber.Ctx) error {
 	userId := c.Locals("userId").(uint)
-	labelId, labelErr := c.ParamsInt("labelId")
-	taskId, taskErr := c.ParamsInt("taskId")
-	if taskErr != nil || labelErr != nil {
+	labelId, err := c.ParamsInt("labelId")
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "bad input params",
 		})
 	}
 
-	var body RemoveLabelBody
+	var body ArchiveLabelBody
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
@@ -202,15 +201,7 @@ func RemoveLabel(c *fiber.Ctx) error {
 			"message": "error finding associated user",
 		})
 	}
-	// filter tasks for taskId
-	i := 0
-	for _, task := range label.Tasks {
-		if task.Id != uint(taskId) {
-			label.Tasks[i] = task
-			i++
-		}
-	}
-	label.Tasks = label.Tasks[:i]
+	label.Archived = body.Archive
 
 	if err := database.DB.Save(&label).Error; err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

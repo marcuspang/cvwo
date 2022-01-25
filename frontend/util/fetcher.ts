@@ -1,5 +1,5 @@
 export const fullUrl = (pathname: string) => {
-  return new URL(pathname, process.env.NEXT_PUBLIC_BACKEND_URL).href;
+  return new URL(pathname, process.env.BACKEND_URL).href;
 };
 
 // need credentials for login

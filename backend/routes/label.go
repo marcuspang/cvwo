@@ -11,7 +11,7 @@ func SetupLabelRoutes(app fiber.Router) {
 	app.Get("/", controllers.GetLabels)
 	app.Get("/:id", controllers.GetLabel)
 	app.Post("/", controllers.AddLabel)
-	app.Put("/:labelId/:taskId/remove", controllers.RemoveLabel)
+	app.Put("/:labelId/archive", controllers.ArchiveLabel)
 	app.Patch("/:id", controllers.UpdateLabel)
 	app.Delete("/:id", controllers.DeleteLabel)
 }
