@@ -101,7 +101,11 @@ const EditTaskModal = ({
               borderLeftRadius: 0,
             }}
             listItemStyleProps={{
-              transition: "0.2s all ease",
+              transition: "0.1s all ease",
+            }}
+            listStyleProps={{
+              marginTop: -2,
+              boxShadow: "md",
             }}
             onSelectedItemsChange={(changes) =>
               handleSelectedItemsChange(changes.selectedItems)

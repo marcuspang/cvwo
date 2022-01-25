@@ -1,4 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { apiWithList } from "../services/list";
 import type { RootState } from "../store";
 
 export interface LabelInterface {
@@ -11,28 +12,35 @@ export interface LabelInterface {
   userId: number;
 }
 
-// interface TaskState {
-//   tasks: TaskInterface[];
-// }
+interface LabelState {
+  labels: LabelInterface[];
+}
 
-// const taskInitialState: TaskState = {
-//   tasks: [],
-// };
+const taskInitialState: LabelState = {
+  labels: [],
+};
 
-// export const task = createSlice({
-//   name: "task",
-//   initialState: taskInitialState,
-//   reducers: {
-//     setTask: (state, action: PayloadAction<TaskInterface>) => {
-//       state.tasks.forEach((task, index) => {
-//         if (task.id === action.payload.id) {
-//           state.tasks[index] = action.payload;
-//         }
-//       });
-//     },
-//   },
-//   extraReducers: (builder) => {},
-// });
+export const task = createSlice({
+  name: "task",
+  initialState: taskInitialState,
+  reducers: {
+    setTask: (state, action: PayloadAction<LabelInterface>) => {
+      state.labels.forEach((task, index) => {
+        if (task.id === action.payload.id) {
+          state.labels[index] = action.payload;
+        }
+      });
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      apiWithList.endpoints.getLists.matchFulfilled,
+      (state, action) => {
+        
+      }
+    );
+  },
+});
 
 // export const { setTask } = task.actions;
 
