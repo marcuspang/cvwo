@@ -4,7 +4,7 @@ Done by Marcus Pang Yu Yang
 
 ## Getting Started
 
-Run `yarn` to install all the dependencies and `yarn dev` to start the backend and frontend instances. Backend is located at [localhost:4000](localhost:4000), and frontend is located at [localhost:3000](localhost:3000)
+Run `yarn` to install all the dependencies and `yarn dev` to start the backend and frontend instances. Backend is located at (localhost:4000)[localhost:4000], and frontend is located at (localhost:3000)[localhost:3000]
 
 ## Features
 
