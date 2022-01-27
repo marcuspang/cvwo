@@ -2,6 +2,8 @@
 
 Done by Marcus Pang Yu Yang
 
+Website is live [here!](https://cvwo.vercel.app)
+
 ## Getting Started
 
 Run `yarn` to install all the dependencies and `yarn dev` to start the backend and frontend instances. Backend is located at [localhost:4000](http://localhost:4000), and frontend is located at [localhost:3000](http://localhost:3000)
